@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Khách Thuê - Trọ Xanh</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-light">
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+    <div class="container-fluid dashboard-container">
+        <a class="navbar-brand fw-bold" href="#">🏠 TRỌ XANH - KHÁCH THUÊ</a>
+        <div class="d-flex align-items-center">
+            <span class="text-white me-3" id="welcomeText">Xin chào, ...</span>
+            <div class="nav-item dropdown me-4">
+                <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-bell-fill fs-5 text-warning"></i>
+                    <span id="badgeThongBao" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.65em;">0</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="notificationDropdown" style="width: 320px; max-height: 400px; overflow-y: auto;" id="listThongBao">
+                    <li><span class="dropdown-item text-center text-muted">Đang tải dữ liệu...</span></li>
+                </ul>
+            </div>
+            <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal" data-bs-target="#doiMatKhauModal">
+                <i class="bi bi-key"></i> Đổi mật khẩu
+            </button>
+            <button class="btn btn-outline-light btn-sm" onclick="dangXuat()">
+                <i class="bi bi-box-arrow-right"></i> Đăng xuất
+            </button>
+        </div>
+    </div>
+</nav>
+
+<!-- Nội dung chính -->
+<div class="container-fluid dashboard-container mt-4">
+    <div class="row">
+        <!-- CỘT MENU -->
+        <div class="col-md-3 mb-3">
+            <div class="sidebar tenant-sidebar shadow-sm">
+                <a href="#" class="nav-link active" id="menu-hop-dong" onclick="switchTab('hop-dong')"><i class="bi bi-file-text"></i> Hợp đồng của tôi</a>
+                <a href="#" class="nav-link" id="menu-hoa-don" onclick="switchTab('hoa-don')"><i class="bi bi-receipt"></i> Hóa đơn điện nước</a>
+                <a href="#" class="nav-link" id="menu-su-co" onclick="switchTab('su-co')"><i class="bi bi-tools"></i> Phản ánh sự cố</a>
+                <a href="#" class="nav-link" id="menu-tam-tru" onclick="switchTab('tam-tru')"><i class="bi bi-file-earmark-person"></i> Khai báo tạm trú</a>
+                <hr class="text-muted opacity-25">
+                <a href="#" class="nav-link" id="menu-ca-nhan" onclick="switchTab('ca-nhan')"><i class="bi bi-person-lines-fill"></i> Thông tin cá nhân</a>
+            </div>
+        </div>
+
+        <!-- CỘT NỘI DUNG TỪNG TAB -->
+        <div class="col-md-9">
+            <!-- 1. TAB HỢP ĐỒNG -->
+            <div id="sec-hop-dong" class="content-section active">
+                <!-- WIDGET THÔNG TIN HỢP ĐỒNG -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold text-primary"><i class="bi bi-file-earmark-text"></i> Tổng quan Hợp đồng</h5>
+                        <span id="badgeTrangThaiHopDong" class="badge bg-secondary">Đang tải...</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">Ngày bắt đầu</small>
+                                <h6 class="fw-bold" id="txtNgayBatDau">--/--/----</h6>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Ngày kết thúc</small>
+                                <h6 class="fw-bold" id="txtNgayKetThuc">--/--/----</h6>
+                            </div>
+                        </div>
+                        
+                        <div id="canhBaoHetHan" class="alert alert-warning d-none py-2 mb-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Hợp đồng của bạn sắp hết hạn!
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success fw-bold flex-grow-1" data-bs-toggle="modal" data-bs-target="#modalYeuCauGiaHanUser">
+                                <i class="bi bi-calendar-plus"></i> Gia hạn
+                            </button>
+                            <button class="btn btn-outline-danger fw-bold flex-grow-1" data-bs-toggle="modal" data-bs-target="#modalBaoTraPhong">
+                                <i class="bi bi-box-arrow-right"></i> Báo chuyển trọ
+                            </button>
+                            <button id="btnHuyTraPhong" class="btn btn-secondary fw-bold flex-grow-1 d-none" onclick="huyBaoTraPhong()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Hủy báo chuyển trọ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                            <h4 class="card-title text-success m-0"><i class="bi bi-file-earmark-text"></i> Toàn văn Hợp đồng</h4>
+                            <button class="btn btn-danger" onclick="taiHopDongPDF('noidungHopDong', 'Hop_Dong_Thue_Phong.pdf')">
+                                <i class="bi bi-file-pdf"></i> Tải bản PDF
+                            </button>
+                        </div>
+                        <div id="noidungHopDong" class="bg-white border rounded p-4" style="min-height: 500px; max-height: 700px; overflow-y: auto;">
+                            <div class="text-center text-muted mt-5">
+                                <div class="spinner-border text-success" role="status"></div>
+                                <p class="mt-2">Đang tải dữ liệu hợp đồng...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TAB HÓA ĐƠN -->
+            <div id="sec-hoa-don" class="content-section">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h4 class="card-title text-success mb-4"><i class="bi bi-receipt"></i> Lịch sử Hóa đơn</h4>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-center align-middle">
+                                <thead class="table-success align-middle text-center">
+                                    <tr>
+                                        <th>Tháng</th>
+                                        <th>Tiền Phòng</th>
+                                        <th>Điện (Ký)</th>
+                                        <th>Nước (Khối)</th>
+                                        <th>Phụ phí</th>
+                                        <th>Tổng Tiền</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bangHoaDonKhach">
+                                    <tr><td colspan="7" class="text-center text-muted py-4">Đang tải dữ liệu...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. TAB SỰ CỐ -->
+            <div id="sec-su-co" class="content-section">
+                <div class="card shadow-sm mb-4 border-warning">
+                    <div class="card-header bg-warning text-dark fw-bold">
+                        <i class="bi bi-tools"></i> Gửi Phản Ánh Sự Cố Mới
+                    </div>
+                    <div class="card-body">
+                        <form id="formSuCo">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tiêu đề sự cố</label>
+                                <input type="text" id="tieuDeSuCo" class="form-control" placeholder="VD: Hỏng bóng đèn nhà tắm, rỉ nước bồn rửa..." required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Mô tả chi tiết</label>
+                                <textarea id="moTaSuCo" class="form-control" rows="3" placeholder="Có thể để trống nếu sự cố nhỏ..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-warning fw-bold">
+                                <i class="bi bi-send"></i> Gửi Phản Ánh
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-success mb-3"><i class="bi bi-clock-history"></i> Lịch sử phản ánh của phòng</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover text-center align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ngày báo</th>
+                                        <th>Tiêu đề</th>
+                                        <th>Mô tả chi tiết</th>
+                                        <th>Chi phí (50%)</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bangLichSuSuCo">
+                                    <tr><td colspan="5" class="text-muted py-3">Đang tải dữ liệu...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. TAB THÔNG TIN CÁ NHÂN -->
+            <div id="sec-ca-nhan" class="content-section">
+                <div class="card shadow-sm border-success">
+                    <div class="card-header bg-success text-white fw-bold">
+                        <i class="bi bi-person-lines-fill"></i> Thông tin cá nhân của bạn (Người đại diện)
+                    </div>
+                    <div class="card-body">
+                        <form id="formCaNhan">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Họ và tên</label>
+                                    <input type="text" id="cnTenKhach" class="form-control" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Số điện thoại</label>
+                                    <input type="text" id="cnSdt" class="form-control" maxlength="10" 
+                                           oninput="locKyTuSo(this, 10)" 
+                                           onblur="khoaOChuaHopLe(this, 10, 'Số điện thoại phải có đúng 10 số!')" required>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Ngày sinh</label>
+                                    <input type="text" id="cnNgaySinh" class="form-control" placeholder="VD: 25/08/2002" 
+                                           oninput="formatDateInput(this)" maxlength="10">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Giới tính</label>
+                                    <select id="cnGioiTinh" class="form-select">
+                                        <option value="">-- Chọn --</option>
+                                        <option value="Nam">Nam</option>
+                                        <option value="Nữ">Nữ</option>
+                                        <option value="Khác">Khác</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Quê quán</label>
+                                <input type="text" id="cnQueQuan" class="form-control" placeholder="VD: Cầu Giấy, Hà Nội">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-danger">Căn cước công dân (Không thể đổi)</label>
+                                <input type="text" id="cnCccd" class="form-control bg-light text-muted" readonly>
+                            </div>
+                            <button type="submit" class="btn btn-success fw-bold w-100">
+                                <i class="bi bi-save"></i> Cập nhật thông tin
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card shadow-sm border-info mt-4">
+                    <div class="card-header bg-info text-white fw-bold d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-people-fill"></i> Thông tin Người ở ghép (Tối đa 1 người)</span>
+                        <div id="btnThemNguoiGhepContainer"></div>
+                    </div>
+                    <div class="card-body" id="khungNguoiGhep">
+                        <div class="text-center text-muted py-3">Đang tải dữ liệu...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. TAB KHAI BÁO TẠM TRÚ -->
+            <div id="sec-tam-tru" class="content-section" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="card-title text-success m-0"><i class="bi bi-file-earmark-person"></i> Khai Báo Tạm Trú (CT01)</h4>
+                    <button class="btn btn-success fw-bold" onclick="moModalKhaiBaoNguoiThue()">
+                        <i class="bi bi-send-plus"></i> Gửi tờ khai mới
+                    </button>
+                </div>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="text-primary mb-3"><i class="bi bi-clock-history"></i> Lịch sử khai báo của bạn</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered text-center align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Họ và tên</th>
+                                        <th>CCCD</th>
+                                        <th>Ngày gửi</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableTamTruKhachBody">
+                                    <tr><td colspan="5" class="text-center text-muted py-3">Đang tải dữ liệu...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODALS  -->
+<!-- Modal Báo Chuyển Trọ (Trả Phòng) -->
+<div class="modal fade" id="modalBaoTraPhong" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-box-arrow-right"></i> Thông báo chuyển trọ</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">
+                    <i class="bi bi-info-circle"></i> Quy định hoàn cọc:<br>
+                    - Báo trước <b>từ 30 ngày trở lên</b>: Hoàn 100% tiền cọc.<br>
+                    - Báo gấp <b>dưới 30 ngày</b>: Trừ 20% tiền cọc.
+                </p>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ngày dự kiến chuyển đi <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="ngayChuyenDi" onchange="tinhToanTienCocTraPhong()">
+                </div>
+                <div id="ketQuaCocTraPhong" class="alert d-none fw-bold" style="font-size: 0.95rem;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Suy nghĩ lại</button>
+                <button type="button" class="btn btn-danger fw-bold" onclick="xacNhanTraPhong()">Gửi thông báo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đổi Mật Khẩu -->
+<div class="modal fade" id="doiMatKhauModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title fw-bold">Đổi Mật Khẩu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Mật khẩu cũ</label>
+                    <div class="input-group">
+                        <input type="password" id="userOldPass" class="form-control">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('userOldPass', 'iconUserOld')">
+                            <i class="bi bi-eye" id="iconUserOld"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mật khẩu mới</label>
+                    <div class="input-group">
+                        <input type="password" id="userNewPass" class="form-control">
+                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('userNewPass', 'iconUserNew')">
+                            <i class="bi bi-eye" id="iconUserNew"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-success w-100 fw-bold" onclick="luuMatKhauUser()">Cập nhật mật khẩu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm/Sửa Người Ở Ghép (Khách Thuê) -->
+<div class="modal fade" id="nguoiGhepUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title fw-bold" id="nguoiGhepUserTitle">Khai Báo Người Ở Ghép</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="nguoiGhepUserForm">
+                    <input type="hidden" id="ngGhepUserId">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ngTenUser" onblur="kiemTraRong(this)" required>
+                        <div class="invalid-feedback">Không được để trống!</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">CCCD <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ngCccdUser" maxlength="12" oninput="locKyTuSo(this, 12)" onblur="khoaOChuaHopLe(this, 12, 'CCCD phải đủ 12 số!')" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ngSdtUser" maxlength="10" oninput="locKyTuSo(this, 10)" onblur="khoaOChuaHopLe(this, 10, 'SĐT phải đủ 10 số!')" required>
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Ngày sinh</label>
+                            <input type="text" id="ngNgaySinhUser" class="form-control" placeholder="VD: 25/08/2003" oninput="formatDateInput(this)" maxlength="10">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Giới tính</label>
+                            <select id="ngGioiTinhUser" class="form-select">
+                                <option value="">-- Chọn --</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Quê quán</label>
+                        <input type="text" id="ngQueQuanUser" class="form-control" placeholder="Tùy chọn...">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-info text-white fw-bold" onclick="saveNguoiGhepUser()">Lưu Thông Tin</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Điền Tờ Khai CT01 -->
+<div class="modal fade" id="modalTamTruKhach" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square"></i> Điền Thông Tin Khai Báo Tạm Trú</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formTamTruKhach">
+                    <div class="mb-4 p-3 bg-light border rounded">
+                        <label class="form-label fw-bold text-primary"><i class="bi bi-person-check"></i> Chọn người cần khai báo:</label>
+                        <select class="form-select border-primary" id="ntChonNguoi" onchange="dienTuDongThongTinNguoiKhai()"><option value="">-- Đang tải dữ liệu... --</option></select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3"><label class="form-label fw-bold">Họ và tên *</label><input type="text" class="form-control" id="ntHoTen" required></div>
+                        <div class="col-md-6 mb-3"><label class="form-label fw-bold">CCCD *</label><input type="text" class="form-control" id="ntCccd" maxlength="12" required></div>
+                        <div class="col-md-6 mb-3"><label class="form-label fw-bold">Số điện thoại *</label><input type="text" class="form-control" id="ntSdt" maxlength="10" required></div>
+                        <div class="col-md-3 mb-3"><label class="form-label fw-bold">Ngày sinh</label><input type="date" class="form-control" id="ntNgaySinh"></div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Giới tính</label>
+                            <select class="form-select" id="ntGioiTinh"><option value="">-- Chọn --</option><option value="Nam">Nam</option><option value="Nữ">Nữ</option></select>
+                        </div>
+                        <div class="col-md-12 mb-3"><label class="form-label fw-bold">Nơi thường trú *</label><input type="text" class="form-control" id="ntThuongTru" required></div>
+                        <div class="col-md-12 mb-3"><label class="form-label fw-bold">Chỗ ở hiện tại *</label><input type="text" class="form-control" id="ntChoOHienTai" required></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary fw-bold" onclick="guiKhaiBaoTamTruNguoiThue()"><i class="bi bi-send"></i> Gửi cho Chủ Trọ</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xem Trước CT01 -->
+<div class="modal fade" id="inTamTruKhachModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-text"></i> Tờ Khai Của Bạn</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body bg-secondary bg-opacity-10 d-flex justify-content-center p-4">
+                <div id="inTamTruKhachContent" class="bg-white shadow border" style="width: 100%; max-width: 800px;"></div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Đóng</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Phản hồi Gia hạn hợp đồng -->
+<div class="modal fade" id="modalYeuCauGiaHanUser" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-exclamation-triangle-fill"></i> Phản hồi Hợp đồng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fs-6">Hợp đồng thuê phòng của bạn sắp hết hạn. Bạn có muốn tiếp tục thuê phòng không?</p>
+                <div class="mb-3 mt-4" id="divNhapSoThang">
+                    <label class="form-label fw-bold text-primary">Nếu CÓ, chọn thời gian muốn gia hạn thêm:</label>
+                    <select class="form-select border-primary fw-bold text-dark" id="soThangGiaHanInput">
+                        <option value="1">1 Tháng</option>
+                        <option value="3">3 Tháng</option>
+                        <option value="6" selected>6 Tháng</option>
+                        <option value="12">1 Năm</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-outline-danger fw-bold" onclick="guiPhanHoiGiaHan(false)">Không gia hạn (Trả phòng)</button>
+                <button type="button" class="btn btn-success fw-bold" onclick="guiPhanHoiGiaHan(true)">Gửi yêu cầu Gia hạn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="js/user-main.js"></script>
+<script src="js/user-hop-dong.js"></script>
+<script src="js/user-hoa-don.js"></script>
+<script src="js/user-su-co.js"></script>
+<script src="js/user-tam-tru.js"></script>
+<script src="js/template-tam-tru.js"></script>
+<script src="js/thong-bao.js"></script>
+</body>
+</html>
