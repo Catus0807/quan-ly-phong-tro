@@ -1,4 +1,4 @@
-const API_THONG_BAO = 'http://localhost:8080/api/thong-bao';
+const API_THONG_BAO = '/api/thong-bao';
 
 // NHẬN DIỆN TAB ĐỘC LẬP
 const isChuTro = document.getElementById('globalKhuVucFilter') !== null;
@@ -22,8 +22,8 @@ function loadThongBaoGop() {
     
     const p1 = fetch(`${API_THONG_BAO}/${TAB_LOAI_NGUOI_NHAN}/${TAB_USER_ID}`).then(res => res.ok ? res.json() : []);
     const p2 = isChuTro
-        ? fetch(`http://localhost:8080/api/nguoi-thue/chu-tro/${TAB_USER_ID}`).then(res => res.ok ? res.json() : [])
-        : fetch(`http://localhost:8080/api/nguoi-thue/${TAB_USER_ID}`).then(res => res.ok ? res.json() : []).then(data => data ? [data] : []);
+        ? fetch(`/api/nguoi-thue/chu-tro/${TAB_USER_ID}`).then(res => res.ok ? res.json() : [])
+        : fetch(`/api/nguoi-thue/${TAB_USER_ID}`).then(res => res.ok ? res.json() : []).then(data => data ? [data] : []);
 
     Promise.all([p1, p2]).then(([dbThongBao, danhSachKhach]) => {
         let thongBaoGop = dbThongBao.filter(tb => tb.loaiThongBao !== 'HOP_DONG_SAP_HET_HAN');

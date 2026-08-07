@@ -1,5 +1,5 @@
-const API_URL_TAM_TRU_KHACH = 'http://localhost:8080/api/tam-tru';
-const API_URL_KHACH_THUE = 'http://localhost:8080/api/nguoi-thue';
+const API_URL_TAM_TRU_KHACH = '/api/tam-tru';
+const API_URL_KHACH_THUE = '/api/nguoi-thue';
 let danhSachNguoiKhai = []; // Chứa khách chính + người ghép
 
 // Tải danh sách lịch sử khai báo

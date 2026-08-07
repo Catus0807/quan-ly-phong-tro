@@ -1,4 +1,4 @@
-const API_URL_HOADON = 'http://localhost:8080/api/hoa-don';
+const API_URL_HOADON = '/api/hoa-don';
 let hoaDonModal;
 let danhSachPhongHoaDon = []; 
 let tongTienHoaDon = 0; // Biến toàn cục lưu tổng tiền thực tế
@@ -227,7 +227,7 @@ function loadPhongDangThue(selectedPhongId = null, selectedChiNhanh = '') {
     const selectPhong = document.getElementById('hdPhongId');
     if (selectPhong) selectPhong.innerHTML = '<option value="">-- Đang tải dữ liệu... --</option>';
     
-    fetch(`http://localhost:8080/api/phong-tro/chu-tro/${chuTroId}?t=` + new Date().getTime())
+    fetch(`/api/phong-tro/chu-tro/${chuTroId}?t=` + new Date().getTime())
         .then(res => res.json())
         .then(data => {
             // Chỉ lấy các phòng đang có người ở

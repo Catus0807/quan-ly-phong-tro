@@ -1,5 +1,5 @@
 // Cấu hình hê thống
-const API_URL_KHACH = 'http://localhost:8080/api/nguoi-thue';
+const API_URL_KHACH = '/api/nguoi-thue';
 let danhSachKhach = [];
 let danhSachKhachCu = []; // Mảng chứa dữ liệu khách đã dọn đi
 let khachModalInstance;
@@ -219,7 +219,7 @@ function loadPhongTrongTheoChiNhanh() {
     if (!select) return; 
     select.innerHTML = '<option value="">-- Đang tải dữ liệu... --</option>';
     
-    fetch(`http://localhost:8080/api/phong-tro/chu-tro/${chuTroId}`)
+    fetch(`/api/phong-tro/chu-tro/${chuTroId}`)
         .then(res => res.json())
         .then(data => {
             select.innerHTML = '<option value="">-- Chọn phòng --</option>';
@@ -654,7 +654,7 @@ function saveNguoiGhep() {
         queQuan: document.getElementById('ngQueQuan')?.value.trim()
     };
     
-    const url = ghepId ? `http://localhost:8080/api/nguoi-o-ghep/${ghepId}` : `http://localhost:8080/api/nguoi-o-ghep/khach/${khachId}`;
+    const url = ghepId ? `/api/nguoi-o-ghep/${ghepId}` : `/api/nguoi-o-ghep/khach/${khachId}`;
     const method = ghepId ? 'PUT' : 'POST';
     
     fetch(url, {
@@ -675,7 +675,7 @@ function saveNguoiGhep() {
 
 function xoaNguoiGhep(id) {
     if (confirm("Chắc chắn muốn xóa người ở ghép này?")) {
-        fetch(`http://localhost:8080/api/nguoi-o-ghep/${id}`, { method: 'DELETE' })
+        fetch(`/api/nguoi-o-ghep/${id}`, { method: 'DELETE' })
         .then(async res => {
             if (res.ok) {
                 alert("Đã xóa người ở ghép!");
@@ -886,7 +886,7 @@ function moModalPhanHoi(khachId) {
     document.getElementById('phDanhSachNo').innerHTML = '';
     chuoiNoTienTam = '';
     
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}`)
+    fetch(`/api/nguoi-thue/${khachId}`)
     .then(res => res.json())
     .then(khach => {
         if (khach.phongTro && khach.phongTro.id) {
@@ -898,7 +898,7 @@ function moModalPhanHoi(khachId) {
 }
 
 function kiemTraNoHoaDon(phongId) {
-    fetch(`http://localhost:8080/api/hoa-don/phong/${phongId}`)
+    fetch(`/api/hoa-don/phong/${phongId}`)
     .then(res => res.json())
     .then(danhSachHoaDon => {
         const hoaDonNo = danhSachHoaDon.filter(hd => hd.trangThai === 'CHUA_THU');
@@ -1062,7 +1062,7 @@ function guiPhanHoiGiaHan(isGiaHan) {
         }
     }
     
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}/gui-yeu-cau-gia-han?isGiaHan=${isGiaHan}&soThang=${soThang}`, {
+    fetch(`/api/nguoi-thue/${khachId}/gui-yeu-cau-gia-han?isGiaHan=${isGiaHan}&soThang=${soThang}`, {
         method: 'POST'
     })
     .then(async res => {

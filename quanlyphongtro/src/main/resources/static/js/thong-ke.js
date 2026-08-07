@@ -27,7 +27,7 @@ function fetchThongKe() {
         }
     }
     
-    let url = `http://localhost:8080/api/thong-ke/chu-tro/${chuTroId}/tong-quan?t=${new Date().getTime()}`;
+    let url = `/api/thong-ke/chu-tro/${chuTroId}/tong-quan?t=${new Date().getTime()}`;
     if (chiNhanh) url += `&khuVucId=${chiNhanh}`;
     if (thangNam) url += `&thangNam=${thangNam}`;
     
@@ -124,7 +124,7 @@ function renderDuLieuThongKe(data) {
 
 function fetchWidgetCanhBao(chuTroId, chiNhanh, thangNam) {
     // Quét Hóa đơn nợ cước
-    let urlHd = `http://localhost:8080/api/hoa-don`;
+    let urlHd = `/api/hoa-don`;
     if(chiNhanh) urlHd += `/loc-chi-nhanh?khuVucId=${chiNhanh}`;
     fetch(urlHd)
         .then(res => res.json())
@@ -175,7 +175,7 @@ function fetchWidgetCanhBao(chuTroId, chiNhanh, thangNam) {
         });
 
     // Quét Hợp đồng sắp hết hạn
-    let urlKhach = `http://localhost:8080/api/nguoi-thue/chu-tro/${chuTroId}`;
+    let urlKhach = `/api/nguoi-thue/chu-tro/${chuTroId}`;
     if(chiNhanh) urlKhach += `/loc-chi-nhanh?khuVucId=${chiNhanh}`;
     fetch(urlKhach)
         .then(res => res.json())
@@ -289,7 +289,7 @@ function xuatBaoCaoExcel(loai) {
             const dsChiNhanh = Array.from(selectChiNhanh.options).filter(opt => opt.value !== "");
             if (dsChiNhanh.length === 0) return alert("Không có chi nhánh nào để xuất!");
             const promises = dsChiNhanh.map(cn => {
-                let url = `http://localhost:8080/api/thong-ke/chu-tro/${chuTroId}/tong-quan?khuVucId=${cn.value}&thangNam=${thangHienThi}`;
+                let url = `/api/thong-ke/chu-tro/${chuTroId}/tong-quan?khuVucId=${cn.value}&thangNam=${thangHienThi}`;
                 return fetch(url).then(res => res.json()).then(resData => ({
                     tenCN: cn.text,
                     bieuDo: resData.bieuDoDongTien
@@ -328,8 +328,8 @@ function xuatBaoCaoExcel(loai) {
             hoanTatXuatExcel(excelData);
         }
     } else if (loai === 'thang') {
-        let urlHd = `http://localhost:8080/api/hoa-don`;
-        let urlSc = `http://localhost:8080/api/su-co`;
+        let urlHd = `/api/hoa-don`;
+        let urlSc = `/api/su-co`;
         Promise.all([
             fetch(urlHd).then(res => res.json()),
             fetch(urlSc).then(res => res.json())

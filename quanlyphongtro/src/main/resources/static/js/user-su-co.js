@@ -2,7 +2,7 @@ function loadLichSuSuCo() {
     const khachId = localStorage.getItem('khachId');
     if (!khachId) return;
 
-    fetch(`http://localhost:8080/api/su-co/khach/${khachId}`)
+    fetch(`/api/su-co/khach/${khachId}`)
     .then(res => res.json())
     .then(data => {
         const tbody = document.getElementById('bangLichSuSuCo');
@@ -60,7 +60,7 @@ document.getElementById('formSuCo').addEventListener('submit', function(e) {
         moTa: document.getElementById('moTaSuCo').value      
     };
 
-    fetch(`http://localhost:8080/api/su-co/khach/${khachId}`, {
+    fetch(`/api/su-co/khach/${khachId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

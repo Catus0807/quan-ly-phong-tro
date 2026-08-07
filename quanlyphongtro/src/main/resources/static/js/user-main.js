@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = '/api';
 
 const role = localStorage.getItem('userRole');
 const khachId = localStorage.getItem('khachId');
@@ -221,7 +221,7 @@ function loadNguoiOGhepCuaToi() {
     const khachId = localStorage.getItem('khachId'); 
     if (!khachId) return;
 
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}?t=${new Date().getTime()}`)
+    fetch(`/api/nguoi-thue/${khachId}?t=${new Date().getTime()}`)
     .then(res => res.json())
     .then(khach => {
         const danhSach = khach.danhSachNguoiOGhep || [];
@@ -326,7 +326,7 @@ function saveNguoiGhepUser() {
         queQuan: document.getElementById('ngQueQuanUser')?.value.trim()
     };
 
-    const url = ghepId ? `http://localhost:8080/api/nguoi-o-ghep/${ghepId}` : `http://localhost:8080/api/nguoi-o-ghep/khach/${khachId}`;
+    const url = ghepId ? `/api/nguoi-o-ghep/${ghepId}` : `/api/nguoi-o-ghep/khach/${khachId}`;
     const method = ghepId ? 'PUT' : 'POST';
 
     fetch(url, {
@@ -348,7 +348,7 @@ function saveNguoiGhepUser() {
 // XÓA NGƯỜI GHÉP
 function xoaNguoiGhepUser(id) {
     if (confirm("Bạn có chắc chắn muốn xóa thông tin người ở ghép này?")) {
-        fetch(`http://localhost:8080/api/nguoi-o-ghep/${id}`, { method: 'DELETE' })
+        fetch(`/api/nguoi-o-ghep/${id}`, { method: 'DELETE' })
         .then(async res => {
             if (res.ok) {
                 alert("Đã xóa người ở ghép!");

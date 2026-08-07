@@ -1,4 +1,4 @@
-const API_QUAN_TRI = 'http://localhost:8080/api/quan-tri';
+const API_QUAN_TRI = '/api/quan-tri';
 let danhSachChuTro = []; // Biến lưu trữ dữ liệu để lọc
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -139,7 +139,7 @@ function resetMatKhau(id, username) {
     const matKhauMoi = prompt(`Tạo mật khẩu mới cho tài khoản [${username}]:\n(Vui lòng cung cấp mật khẩu này cho chủ trọ)`);
     
     if (matKhauMoi && matKhauMoi.trim() !== '') {
-        fetch(`http://localhost:8080/api/chu-tro/${id}/reset-mat-khau`, {
+        fetch(`/api/chu-tro/${id}/reset-mat-khau`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ matKhau: matKhauMoi })

@@ -1,5 +1,5 @@
-const API_URL_TAM_TRU = 'http://localhost:8080/api/tam-tru';
-const API_URL_KHACH_TAM_TRU = 'http://localhost:8080/api/nguoi-thue'; 
+const API_URL_TAM_TRU = '/api/tam-tru';
+const API_URL_KHACH_TAM_TRU = '/api/nguoi-thue'; 
 let danhSachKhachTamTru = []; 
 let mangKhachVaNguoiGhep = [];
 

@@ -1,7 +1,7 @@
 //TẢI VÀ HIỂN THỊ HỢP ĐỒNG
 function loadHopDong() {
     const idNguoiThue = localStorage.getItem('khachId'); 
-    fetch(`http://localhost:8080/api/nguoi-thue/${idNguoiThue}`)
+    fetch(`/api/nguoi-thue/${idNguoiThue}`)
     .then(res => {
         if (!res.ok) throw new Error("Không thể kết nối API Backend");
         return res.json();
@@ -53,7 +53,7 @@ function loadWidgetHopDong() {
     const khachId = localStorage.getItem('khachId');
     if (!khachId) return;
 
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}`)
+    fetch(`/api/nguoi-thue/${khachId}`)
         .then(res => res.json())
         .then(khach => {
             if(khach.ngayBatDau) document.getElementById('txtNgayBatDau').innerText = khach.ngayBatDau.split('-').reverse().join('/');
@@ -165,7 +165,7 @@ function xacNhanTraPhong() {
 
     const khachId = localStorage.getItem('khachId');
     
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}/bao-tra-phong?ngayChuyen=${ngayChuyenInput}`, {
+    fetch(`/api/nguoi-thue/${khachId}/bao-tra-phong?ngayChuyen=${ngayChuyenInput}`, {
         method: 'POST'
     })
     .then(async res => {
@@ -184,7 +184,7 @@ function huyBaoTraPhong() {
     if (!confirm("Bạn muốn hủy thông báo chuyển trọ và tiếp tục ở lại?")) return;
     
     const khachId = localStorage.getItem('khachId');
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}/huy-bao-tra-phong`, { method: 'POST' })
+    fetch(`/api/nguoi-thue/${khachId}/huy-bao-tra-phong`, { method: 'POST' })
     .then(async res => {
         if (res.ok) {
             alert("Đã hủy yêu cầu chuyển trọ thành công!");
@@ -217,7 +217,7 @@ function guiPhanHoiGiaHan(isGiaHan) {
     }
     
     // Gọi API gửi yêu cầu
-    fetch(`http://localhost:8080/api/nguoi-thue/${khachId}/gui-yeu-cau-gia-han?isGiaHan=${isGiaHan}&soThang=${soThang}`, {
+    fetch(`/api/nguoi-thue/${khachId}/gui-yeu-cau-gia-han?isGiaHan=${isGiaHan}&soThang=${soThang}`, {
         method: 'POST'
     })
     .then(async res => {

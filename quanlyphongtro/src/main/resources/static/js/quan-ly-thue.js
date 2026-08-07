@@ -1,4 +1,4 @@
-const API_URL_THUE = 'http://localhost:8080/api/thue';
+const API_URL_THUE = '/api/thue';
 
 // Format tiền tệ
 function formatTien(soTien) {

@@ -1,4 +1,4 @@
-const API_URL_SUCO = 'http://localhost:8080/api/su-co';
+const API_URL_SUCO = '/api/su-co';
 let suCoModal;
 let danhSachPhongGlobal = []; 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +18,7 @@ function fetchSuCo() {
     const selectChiNhanh = document.getElementById('globalKhuVucFilter');
     const chiNhanhId = selectChiNhanh ? selectChiNhanh.value : '';
     const tenChiNhanh = (selectChiNhanh && selectChiNhanh.selectedIndex > 0) ? selectChiNhanh.options[selectChiNhanh.selectedIndex].text : '';
-    fetch('http://localhost:8080/api/su-co')
+    fetch('/api/su-co')
         .then(res => res.json())
         .then(data => {
             let filteredData = data.filter(sc => {
@@ -182,7 +182,7 @@ function loadPhongChoSuCo(selectedPhongId = null, viTriText = '', selectedChiNha
         selectChiNhanh.value = selectedChiNhanh || globalKhuVuc.value || "";
     }
     
-    fetch(`http://localhost:8080/api/phong-tro/chu-tro/${chuTroId}`)
+    fetch(`/api/phong-tro/chu-tro/${chuTroId}`)
         .then(res => res.json())
         .then(data => {
             danhSachPhongGlobal = data;

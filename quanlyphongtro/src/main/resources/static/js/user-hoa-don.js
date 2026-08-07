@@ -3,7 +3,7 @@ function loadHoaDon() {
     const idNguoiThue = localStorage.getItem('khachId');
     if (!idNguoiThue) return;
 
-    fetch(`http://localhost:8080/api/hoa-don/khach/${idNguoiThue}`)
+    fetch(`/api/hoa-don/khach/${idNguoiThue}`)
     .then(res => {
         if (!res.ok) throw new Error("Lỗi kết nối máy chủ");
         return res.json();

@@ -1,4 +1,4 @@
-const API_URL_PHONG = 'http://localhost:8080/api/phong-tro';
+const API_URL_PHONG = '/api/phong-tro';
 
 function kiemTraRong(input) {
     if (!input || !input.value || input.value.trim() === "") {
@@ -173,7 +173,7 @@ function openModal() {
             opt.disabled = (opt.value === 'DANG_THUE');
         });
     }
-    
+
     if(modal) modal.show();
 }
 
@@ -389,7 +389,7 @@ function xacNhanThemKhuVuc() {
         diaChi: tenKhuVuc 
     };
     
-    fetch(`http://localhost:8080/api/khu-vuc/chu-tro/${chuTroId}`, {
+    fetch(`/api/khu-vuc/chu-tro/${chuTroId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
