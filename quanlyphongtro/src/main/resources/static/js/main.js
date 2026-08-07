@@ -1,5 +1,9 @@
 const API_BASE_URL = '/api';
-
+// KIỂM TRA ĐĂNG NHẬP NGAY LẬP TỨC TRƯỚC KHI TẢI TRANG
+const adminSession = localStorage.getItem('adminUsername');
+if (!adminSession) {
+    window.location.href = '/login.html'; 
+}
 let roomModal;
 let khachModal;
 let adminModal;

@@ -19,8 +19,8 @@ public class EmailService {
         String noiDung = "Kính chào " + hoTenChuTro + ",\n\n"
                 + "Ban quản trị Trọ Xanh xin thông báo tài khoản quản lý nhà trọ của bạn đã được phê duyệt thành công.\n"
                 + "Ngay bây giờ, bạn có thể đăng nhập vào hệ thống để bắt đầu quản lý phòng trọ, khách thuê và doanh thu.\n\n"
-                + "Truy cập hệ thống tại: https://quan-ly-phong-tro-w33k.onrender.com\n\n"
-                + "Nếu cần hỗ trợ, vui lòng liên hệ Hotline: 0987.xxx.xxx\n\n"
+                + "Truy cập hệ thống tại: https://quan-ly-phong-tro-w33k.onrender.com/login.html\n\n"
+                + "Nếu cần hỗ trợ, vui lòng liên hệ Hotline: 0869 081 854\n\n"
                 + "Trân trọng,\nBan quản trị Trọ Xanh.";
                 
         message.setText(noiDung);
