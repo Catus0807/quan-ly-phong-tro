@@ -36,7 +36,7 @@ public class EmailService {
                     + "}";
 
             // Mở cổng HTTPS (Port 443) tới Google để lách tường lửa Render
-            URL url = new URL(WEBHOOK_URL);
+            URL url = java.net.URI.create(WEBHOOK_URL).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json; utf-8");
