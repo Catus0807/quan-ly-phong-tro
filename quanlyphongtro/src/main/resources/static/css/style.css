@@ -141,22 +141,32 @@ body {
 }
 
 /* =========================================
-   TỐI ƯU GIAO DIỆN DI ĐỘNG (MOBILE)
+   TỐI ƯU GIAO DIỆN DI ĐỘNG (MOBILE APP STYLE)
 ========================================= */
 @media (max-width: 767.98px) {
     /* Đặt độ rộng cho menu trượt */
-    .offcanvas-md {
-        width: 280px !important; 
+    .offcanvas-md { width: 280px !important; }
+    
+    /* Mở rộng không gian hiển thị 2 bên */
+    .col-md-9 { padding-left: 12px !important; padding-right: 12px !important; }
+    
+    /* Thu nhỏ tiêu đề H2 để không bị thô */
+    h2 { font-size: 1.35rem !important; font-weight: 800; }
+    
+    /* Bo góc mềm mại & thêm bóng đổ cho khối dữ liệu */
+    .card { 
+        border-radius: 16px; 
+        border: none; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important; 
     }
     
-    /* Bỏ khoảng viền thừa 2 bên màn hình để có thêm diện tích hiển thị */
-    .col-md-9 {
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-    }
+    /* Bo góc nút bấm và ô nhập liệu */
+    .btn, .form-select, .form-control { border-radius: 10px; }
     
-    /* Thu nhỏ chữ của bảng một xíu để hiển thị được nhiều cột hơn */
-    .table {
-        font-size: 0.85rem;
-    }
+    /* Giãn các nút tính năng (Lọc, Thêm mới) trải đều màn hình cho dễ bấm */
+    .d-flex.gap-2.flex-wrap > * { flex: 1 1 auto; text-align: center; }
+    
+    /* Tối ưu lại kích thước bảng */
+    .table { font-size: 0.85rem; }
+    .table th, .table td { padding: 10px 5px !important; }
 }
