@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.scheduling.annotation.Async;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +15,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // Sử dụng @Async của Spring Boot thay vì tự tạo Thread thủ công
-    @Async
+    // Tạm thời KHÔNG dùng @Async hay Thread để ép chạy đồng bộ, bắt lỗi trực diện
     public void guiEmailThongBaoDuyet(String emailNhan, String hoTenChuTro) {
+        logger.info(">>> [1] BẮT ĐẦU QUÁ TRÌNH SOẠN EMAIL TỚI: {}", emailNhan);
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(emailNhan);
@@ -32,13 +31,13 @@ public class EmailService {
                     + "Trân trọng,\nBan quản trị Trọ Xanh.";
                     
             message.setText(noiDung);
-            mailSender.send(message);
             
-            logger.info("✅ Đã gửi email thành công tới: {}", emailNhan);
+            logger.info(">>> [2] Đang kết nối tới máy chủ Google SMTP qua Port 587...");
+            mailSender.send(message);
+            logger.info("✅ [3] GỬI EMAIL THÀNH CÔNG TỚI: {}", emailNhan);
             
         } catch (Exception e) {
-            // Ghi log lỗi chi tiết ra hệ thống để kiểm tra trên Render
-            logger.error("❌ LỖI GỬI EMAIL tới {}: {}", emailNhan, e.getMessage());
+            logger.error("❌ [LỖI] KHÔNG THỂ GỬI EMAIL TỚI {}: {}", emailNhan, e.getMessage(), e);
         }
     }
 }
