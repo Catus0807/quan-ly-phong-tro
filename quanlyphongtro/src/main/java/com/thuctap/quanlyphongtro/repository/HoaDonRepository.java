@@ -26,14 +26,14 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) FROM HoaDon h WHERE h.trangThai = 'CHUA_THU'")
     Long sumTienNo();
     
-    // ĐÃ SỬA: Lọc doanh thu theo Chủ Trọ
+    //  Lọc doanh thu theo Chủ Trọ
     @Query("SELECT h.thangThu, SUM(h.tongTien) FROM HoaDon h WHERE h.trangThai = 'DA_THU' AND h.phongTro.chuTro.id = :chuTroId GROUP BY h.thangThu ORDER BY h.thangThu ASC")
     List<Object[]> thongKeDoanhThuTheoChuTroId(@Param("chuTroId") Long chuTroId);
     
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) FROM HoaDon h WHERE h.trangThai = 'CHUA_THU' AND (:khuVucId IS NULL OR h.phongTro.khuVuc.id = :khuVucId)")
     Long sumTienNoTheoKhuVucId(@Param("khuVucId") Long khuVucId);
     
-    // ĐÃ SỬA: Lọc doanh thu theo Chủ trọ + Chi nhánh
+    //  Lọc doanh thu theo Chủ trọ + Chi nhánh
     @Query("SELECT h.thangThu, SUM(h.tongTien) FROM HoaDon h WHERE h.trangThai = 'DA_THU' AND h.phongTro.chuTro.id = :chuTroId AND (:khuVucId IS NULL OR h.phongTro.khuVuc.id = :khuVucId) GROUP BY h.thangThu ORDER BY h.thangThu ASC")
     List<Object[]> thongKeDoanhThuTheoChuTroIdVaKhuVucId(@Param("chuTroId") Long chuTroId, @Param("khuVucId") Long khuVucId);
     
@@ -43,14 +43,14 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Long> {
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) FROM HoaDon h WHERE h.trangThai = 'CHUA_THU' AND h.thangThu = :thangThu AND h.phongTro.chuTro.id = :chuTroId")
     Long sumTienNoTheoThang(@Param("chuTroId") Long chuTroId, @Param("thangThu") String thangThu);
 
-    // ĐÃ SỬA: Lọc nợ cước theo Chủ trọ + Chi nhánh
+    //  Lọc nợ cước theo Chủ trọ + Chi nhánh
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) FROM HoaDon h WHERE h.trangThai = 'CHUA_THU' AND h.thangThu = :thangThu AND h.phongTro.chuTro.id = :chuTroId AND h.phongTro.khuVuc.id = :khuVucId")
     Long sumTienNoTheoThangVaKhuVuc(@Param("chuTroId") Long chuTroId, @Param("khuVucId") Long khuVucId, @Param("thangThu") String thangThu);
 
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) FROM HoaDon h WHERE h.trangThai = 'CHUA_THU' AND h.thangThu LIKE %:nam AND h.phongTro.chuTro.id = :chuTroId")
     Long sumTienNoTheoNamThucTe(@Param("chuTroId") Long chuTroId, @Param("nam") String nam);
 
-    // ĐÃ SỬA: Lọc nợ cước năm theo Chủ trọ + Chi nhánh
+    //  Lọc nợ cước năm theo Chủ trọ + Chi nhánh
     @Query("SELECT COALESCE(SUM(h.tongTien), 0) FROM HoaDon h WHERE h.trangThai = 'CHUA_THU' AND h.thangThu LIKE %:nam AND h.phongTro.chuTro.id = :chuTroId AND h.phongTro.khuVuc.id = :khuVucId")
     Long sumTienNoTheoNamVaKhuVuc(@Param("chuTroId") Long chuTroId, @Param("khuVucId") Long khuVucId, @Param("nam") String nam);
 }

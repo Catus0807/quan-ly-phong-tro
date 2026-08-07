@@ -85,7 +85,19 @@ function loadWidgetHopDong() {
                     if (btnBaoTra) btnBaoTra.classList.add('d-none');
                     if (btnHuyTra) btnHuyTra.classList.remove('d-none');
                 } 
-                // BỔ SUNG: NẾU KHÁCH XIN HỦY TRẢ PHÒNG -> HIỆN ĐANG CHỜ DUYỆT
+                // NẾU CHỦ TRỌ ĐÃ DUYỆT TRẢ PHÒNG
+                else if (khach.trangThaiGiaHan === 'DA_DUYET_TRA_PHONG') {
+                    badge.className = 'badge bg-success'; badge.innerText = 'Đã duyệt trả phòng';
+                    canhBao.classList.remove('d-none');
+                    canhBao.innerHTML = ` Yêu cầu trả phòng đã được chủ trọ <strong>XÁC NHẬN</strong>. Vui lòng dọn dẹp và bàn giao phòng đúng hạn nhé!`;
+                    canhBao.className = 'alert alert-success py-2 mb-3';
+                    
+                    // Khóa hết các nút vì hợp đồng
+                    if (btnGiaHan) btnGiaHan.classList.add('d-none');
+                    if (btnBaoTra) btnBaoTra.classList.add('d-none');
+                    if (btnHuyTra) btnHuyTra.classList.add('d-none'); 
+                } 
+                // NẾU KHÁCH XIN HỦY TRẢ PHÒNG -> HIỆN ĐANG CHỜ DUYỆT
                 else if (khach.trangThaiGiaHan === 'HUY_TRA_PHONG') {
                     badge.className = 'badge bg-warning text-dark'; badge.innerText = 'Đang chờ duyệt Hủy';
                     canhBao.classList.remove('d-none');
@@ -195,9 +207,8 @@ function huyBaoTraPhong() {
     }).catch(err => console.error(err));
 }
 
-// ==========================================
 // KHÁCH GỬI XÁC NHẬN GIA HẠN / TRẢ PHÒNG
-// ==========================================
+
 function guiPhanHoiGiaHan(isGiaHan) {
     const khachId = localStorage.getItem('khachId');
     let soThang = 0;

@@ -70,13 +70,13 @@ public class HoaDonController {
         return ResponseEntity.ok(hoaDonService.locTheoChiNhanh(khuVucId));
     }
 
-    // ĐÃ SỬA: Thêm biến chuTroId và gọi đúng tên hàm mới cập nhật trong Repository
+    //  Thêm biến chuTroId và gọi đúng tên hàm mới cập nhật trong Repository
     @GetMapping("/thong-ke/{chuTroId}")
     public ResponseEntity<List<Object[]>> getThongKe(@PathVariable Long chuTroId) {
         return ResponseEntity.ok(hoaDonRepository.thongKeDoanhThuTheoChuTroId(chuTroId));
     }
 
-    // ĐÃ SỬA: Thêm biến chuTroId và gọi đúng tên hàm mới cập nhật trong Repository
+    //  Thêm biến chuTroId và gọi đúng tên hàm mới cập nhật trong Repository
     @GetMapping("/thong-ke-chi-nhanh/{chuTroId}")
     public ResponseEntity<List<Object[]>> getThongKeTheoChiNhanh(@PathVariable Long chuTroId, @RequestParam Long khuVucId) {
         return ResponseEntity.ok(hoaDonRepository.thongKeDoanhThuTheoChuTroIdVaKhuVucId(chuTroId, khuVucId));

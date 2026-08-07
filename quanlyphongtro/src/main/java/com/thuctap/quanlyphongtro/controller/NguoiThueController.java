@@ -129,7 +129,7 @@ public class NguoiThueController {
         }
     }
 
-    // ĐÃ SỬA: API Kiểm tra thông minh đa cấp độ (Trả về chi tiết tình trạng để Frontend xử lý auto-fill)
+    //  API Kiểm tra thông minh đa cấp độ (Trả về chi tiết tình trạng để Frontend xử lý auto-fill)
     @GetMapping("/chu-tro/{chuTroId}/kiem-tra-danh-tinh")
     public ResponseEntity<?> kiemTraDanhTinhThongMinh(
             @PathVariable Long chuTroId, 

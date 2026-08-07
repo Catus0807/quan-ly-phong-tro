@@ -32,7 +32,7 @@ public class KhuVucController {
         return ResponseEntity.ok(khuVucRepository.findByChuTroId(chuTroId));
     }
 
-    // ĐÃ SỬA: Viết lại bằng if-else để tránh lỗi ép kiểu (Type mismatch)
+    //  Viết lại bằng if-else để tránh lỗi ép kiểu (Type mismatch)
     @PostMapping("/chu-tro/{chuTroId}")
     public ResponseEntity<?> createKhuVuc(@PathVariable Long chuTroId, @RequestBody KhuVuc khuVuc) {
         Optional<ChuTro> chuTroOpt = chuTroRepository.findById(chuTroId);

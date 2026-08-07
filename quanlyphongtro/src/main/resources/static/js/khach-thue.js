@@ -91,6 +91,11 @@ function renderTableKhach(data) {
             rowClass = "align-middle table-secondary text-muted";
             warningBadge = `<br><span class="badge bg-dark text-white mt-2 px-2 py-1 shadow-sm"><i class="bi bi-box-arrow-right"></i> Khách báo trả phòng</span>`;
         } 
+        // Hiển thị badge màu xanh khi đã duyệt xong
+        else if (khach.trangThaiGiaHan === 'DA_DUYET_TRA_PHONG') {
+            rowClass = "align-middle table-success"; 
+            warningBadge = `<br><span class="badge bg-success text-white mt-2 px-2 py-1 shadow-sm"><i class="bi bi-check-circle"></i> Đã duyệt trả phòng</span>`;
+        }
         else if (khach.ngayKetThuc) {
             const ngayKetThuc = new Date(khach.ngayKetThuc);
             ngayKetThuc.setHours(0, 0, 0, 0);
@@ -109,13 +114,13 @@ function renderTableKhach(data) {
             }
         }
         
-        // Thuật toán Lọc Hợp Đồng
+        // Thuật toán Lọc Hợp Đồng 
         if (filterHopDong === 'sap-het-han') {
-            if (khach.trangThaiGiaHan === 'KHONG_GIA_HAN' || soNgayConLai === null || soNgayConLai > 30) {
+            if (khach.trangThaiGiaHan === 'KHONG_GIA_HAN' || khach.trangThaiGiaHan === 'DA_DUYET_TRA_PHONG' || soNgayConLai === null || soNgayConLai > 30) {
                 return; 
             }
         } else if (filterHopDong === 'tra-phong') {
-            if (khach.trangThaiGiaHan !== 'KHONG_GIA_HAN') {
+            if (khach.trangThaiGiaHan !== 'KHONG_GIA_HAN' && khach.trangThaiGiaHan !== 'DA_DUYET_TRA_PHONG') {
                 return; 
             }
         }
@@ -953,9 +958,9 @@ function guiPhanHoiChoKhach() {
     }).catch(err => console.error(err));
 }
 
-// ==========================================
+
 // KHO LƯU TRỮ (LỊCH SỬ THANH LÝ)
-// ==========================================
+
 function moModalLichSuThanhLy() {
     const chuTroId = localStorage.getItem('chuTroId');
     if (!chuTroId) return;
@@ -1009,9 +1014,9 @@ function moModalLichSuThanhLy() {
         });
 }
 
-// ==========================================
+
 // HÀM XEM HỢP ĐỒNG (ĐÃ TÍCH HỢP BIẾN CỜ)
-// ==========================================
+
 function exportHopDong(id, isArchive = false) {
     const listToSearch = isArchive ? danhSachKhachCu : danhSachKhach;
     const khach = listToSearch.find(k => k.id === id);
@@ -1043,9 +1048,9 @@ function exportHopDong(id, isArchive = false) {
     }, isArchive ? 300 : 0);
 }
 
-// ==========================================
+
 // KHÁCH GỬI XÁC NHẬN GIA HẠN / TRẢ PHÒNG
-// ==========================================
+
 function guiPhanHoiGiaHan(isGiaHan) {
     const khachId = localStorage.getItem('khachId');
     let soThang = 0;
@@ -1083,9 +1088,8 @@ function guiPhanHoiGiaHan(isGiaHan) {
     }).catch(err => console.error("Lỗi:", err));
 }
 
-// ==========================================
+
 // HÀM MỞ CHI TIẾT NGƯỜI Ở GHÉP TỪ THÔNG BÁO
-// ==========================================
 function moChiTietNguoiGhepTuThongBao(khachId) {
     // Tìm khách dựa trên danhSachKhach đã load sẵn
     const khach = danhSachKhach.find(k => k.id === khachId);

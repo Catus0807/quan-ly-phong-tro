@@ -139,7 +139,7 @@ function renderPhongSelect(branchId, selectedPhongId = null, viTriText = '') {
     
     selectPhong.innerHTML = '<option value="">-- Chọn phòng --</option>';
     
-    // ĐÃ SỬA: Thuật toán lọc "Bao lô" - Dù HTML truyền ID hay Tên chi nhánh vào thì vẫn lọc chính xác 100%
+    //  Thuật toán lọc "Bao lô" - Dù HTML truyền ID hay Tên chi nhánh vào thì vẫn lọc chính xác 100%
     const filteredRooms = (branchId && branchId !== "")
         ? danhSachPhongGlobal.filter(p => {
             if (!p.khuVuc) return false;

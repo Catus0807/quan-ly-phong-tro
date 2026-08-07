@@ -338,7 +338,7 @@ function checkTrungTenPhong() {
         });
 }
 
-// ĐÃ SỬA: Đóng hàm deleteRoom đúng vị trí
+//  Đóng hàm deleteRoom đúng vị trí
 function deleteRoom(id) {
     if (confirm('Bạn có chắc chắn muốn xóa phòng này?')) {
         fetch(`${API_URL_PHONG}/${id}`, { method: 'DELETE' })

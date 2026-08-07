@@ -78,7 +78,7 @@ public class HoaDonService {
                 String tieuDe = "";
                 String noiDung = "";
 
-                // ĐÃ SỬA: Ưu tiên bắt trạng thái ĐÃ THU lên đầu tiên
+                //  Ưu tiên bắt trạng thái ĐÃ THU lên đầu tiên
                 if ("DA_THU".equals(savedHoaDon.getTrangThai())) {
                     tieuDe = "✅ Đã thanh toán tháng " + savedHoaDon.getThangThu();
                     noiDung = "Chủ trọ đã xác nhận thu tiền hóa đơn tháng " + savedHoaDon.getThangThu() + 

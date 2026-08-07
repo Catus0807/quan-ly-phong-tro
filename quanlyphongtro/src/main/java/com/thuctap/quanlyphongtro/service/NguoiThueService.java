@@ -27,18 +27,15 @@ public class NguoiThueService {
     
     @Autowired
     private ThongBaoService thongBaoService;
-    
-    // @Autowired
-    // private NguoiOGhepRepository nguoiOGhepRepository; 
 
-    // ĐÃ SỬA: Lọc bỏ người đã thanh lý khỏi danh sách tổng
+    //Lọc bỏ người đã thanh lý khỏi danh sách tổng
     public List<NguoiThue> getAllNguoiThue(Long chuTroId) {
         return nguoiThueRepository.findByChuTroId(chuTroId).stream()
                 .filter(nt -> !"DA_THANH_LY".equals(nt.getTrangThaiGiaHan()))
                 .collect(Collectors.toList());
     }
 
-    // ĐÃ SỬA: Lọc bỏ người đã thanh lý khỏi danh sách tìm theo chi nhánh
+    // Lọc bỏ người đã thanh lý khỏi danh sách tìm theo chi nhánh
     public List<NguoiThue> locTheoChiNhanh(Long chuTroId, Long khuVucId) {
         return nguoiThueRepository.findByChuTroIdAndKhuVucId(chuTroId, khuVucId).stream()
                 .filter(nt -> !"DA_THANH_LY".equals(nt.getTrangThaiGiaHan()))
@@ -263,9 +260,10 @@ public class NguoiThueService {
             loaiYeuCau = "Hủy trả phòng (Tiếp tục ở)";
         }
         
+        //  Dùng từ "Lời nhắn" nếu Chấp nhận, "Lý do" nếu Từ chối
         String noiDung = "Chủ trọ đã " + (isChapNhan ? "CHẤP NHẬN" : "TỪ CHỐI") + " yêu cầu [" + loaiYeuCau + "] của bạn.";
         if (lyDo != null && !lyDo.trim().isEmpty()) {
-            noiDung += " Lý do: " + lyDo;
+            noiDung += (isChapNhan ? " Lời nhắn: " : " Lý do: ") + lyDo;
         }
         
         if ("HUY_TRA_PHONG".equals(trangThaiHienTai)) {
@@ -273,6 +271,13 @@ public class NguoiThueService {
                 khach.setTrangThaiGiaHan(null);
             } else {
                 khach.setTrangThaiGiaHan("KHONG_GIA_HAN"); 
+            }
+        } else if ("KHONG_GIA_HAN".equals(trangThaiHienTai)) {
+            if (isChapNhan) {
+                // Sinh ra trạng thái mới để Frontend biết là đã duyệt
+                khach.setTrangThaiGiaHan("DA_DUYET_TRA_PHONG"); 
+            } else {
+                khach.setTrangThaiGiaHan(null);
             }
         } else {
             if (!isChapNhan) {

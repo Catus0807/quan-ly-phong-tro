@@ -49,7 +49,7 @@ public class ThongKeService {
                 sumNo = hoaDonRepository.sumTienNoTheoThang(chuTroId, currentMonthStr);
             }
             
-            // ĐÃ SỬA: Gọi hàm mới đã lọc theo chuTroId
+            //  Gọi hàm mới đã lọc theo chuTroId
             dsDoanhThu = hoaDonRepository.thongKeDoanhThuTheoChuTroId(chuTroId); 
             dsSuCo = suCoRepository.findAll();
         } else {
@@ -58,7 +58,7 @@ public class ThongKeService {
             soBaoTri = phongTroRepository.countByChuTroIdAndTrangThaiAndKhuVucId(chuTroId, "BAO_TRI", khuVucId);
             
             if (isCaNam) {
-                // ĐÃ SỬA: Gọi hàm mới đã lọc theo chuTroId + khuVucId
+                //  Gọi hàm mới đã lọc theo chuTroId + khuVucId
                 sumNo = hoaDonRepository.sumTienNoTheoNamVaKhuVuc(chuTroId, khuVucId, "/" + nam);
             } else {
                 sumNo = hoaDonRepository.sumTienNoTheoThangVaKhuVuc(chuTroId, khuVucId, currentMonthStr);
@@ -68,7 +68,7 @@ public class ThongKeService {
             dsSuCo = suCoRepository.findAllByKhuVucId(khuVucId);
         }
 
-        // ĐÃ SỬA: Lọc sạch mảng Sự cố, bắt buộc phải thuộc về Chủ trọ đang đăng nhập
+        //  Lọc sạch mảng Sự cố, bắt buộc phải thuộc về Chủ trọ đang đăng nhập
         dsSuCo = dsSuCo.stream().filter(sc -> {
             if (sc.getChuTro() != null && sc.getChuTro().getId().equals(chuTroId)) return true;
             if (sc.getPhongTro() != null && sc.getPhongTro().getChuTro() != null && sc.getPhongTro().getChuTro().getId().equals(chuTroId)) return true;
