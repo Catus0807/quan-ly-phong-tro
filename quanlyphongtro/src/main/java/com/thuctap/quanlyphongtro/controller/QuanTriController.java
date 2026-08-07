@@ -6,6 +6,8 @@ import com.thuctap.quanlyphongtro.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,9 @@ import java.util.Map;
 @RequestMapping("/api/quan-tri")
 @CrossOrigin("*")
 public class QuanTriController {
+    
+    // Thêm bộ ghi Log để theo dõi trên Render
+    private static final Logger logger = LoggerFactory.getLogger(QuanTriController.class);
 
     @Autowired
     private ChuTroRepository chuTroRepository;
@@ -39,12 +44,19 @@ public class QuanTriController {
             chuTroRepository.save(chuTro);
             
             // Gửi email tự động nếu được duyệt
-            if ("HOAT_DONG".equals(trangThaiMoi) && chuTro.getEmail() != null && !chuTro.getEmail().isEmpty()) {
-                emailService.guiEmailThongBaoDuyet(chuTro.getEmail(), chuTro.getHoTen());
+            if ("HOAT_DONG".equals(trangThaiMoi)) {
+                if (chuTro.getEmail() != null && !chuTro.getEmail().trim().isEmpty()) {
+                    logger.info("✅ Đang tiến hành gửi email kích hoạt cho: {}", chuTro.getEmail());
+                    emailService.guiEmailThongBaoDuyet(chuTro.getEmail(), chuTro.getHoTen());
+                } else {
+                    // Nếu lỗi do thiếu email, nó sẽ in dòng chữ này lên màn hình Console của Render
+                    logger.warn("⚠️ CẢNH BÁO: Chủ trọ {} được duyệt nhưng KHÔNG CÓ EMAIL trong CSDL!", chuTro.getHoTen());
+                }
             }
             
             return ResponseEntity.ok("Cập nhật trạng thái thành công!");
         } catch (Exception e) {
+            logger.error("❌ Lỗi khi cập nhật trạng thái: ", e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
