@@ -50,6 +50,13 @@ function switchTab(tabName) {
     }
 
     reloadCurrentTab(); 
+
+    // Tự động đóng Menu trượt trên điện thoại sau khi bấm chuyển Tab
+    const sidebar = document.getElementById('sidebarMenu');
+    if (window.innerWidth < 768 && sidebar) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(sidebar) || new bootstrap.Offcanvas(sidebar);
+        bsOffcanvas.hide();
+    }
 }
 
 // Gọi đúng hàm tải dữ liệu tương ứng với màn hình Tab đang được mở
