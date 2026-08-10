@@ -183,13 +183,19 @@
         .then(async res => {
             if (res.ok) {
                 const result = await res.json();
-                localStorage.setItem('userRole', result.role); 
                 
+                // XỬ LÝ: NẾU TÀI KHOẢN CÓ NHIỀU PHÒNG TRỌ
+                if (result.role === 'MULTIPLE_USERS') {
+                    hienThiManHinhChonPhong(result.danhSachPhong);
+                    return; // Dừng tại đây, không redirect vội
+                }
+                
+                // XỬ LÝ ĐĂNG NHẬP BÌNH THƯỜNG (SUPER_ADMIN, ADMIN, USER 1 PHÒNG)
+                localStorage.setItem('userRole', result.role); 
                 if (result.role === 'SUPER_ADMIN') {
                     window.location.href = result.redirect; 
                     return; 
                 }
-                
                 if (result.role === 'ADMIN') {
                     localStorage.setItem('chuTroId', result.chuTroId);
                     localStorage.setItem('adminUsername', result.username); 
@@ -245,6 +251,36 @@
         })
         .catch(err => console.error("Lỗi mạng:", err));
     });
+
+    // Giao diện chọn phòng khi khách thuê nhiều nơi
+    function hienThiManHinhChonPhong(danhSachPhong) {
+        const loginPane = document.getElementById('login-pane');
+        let htmlOptions = '<h5 class="text-center text-success mb-3 fw-bold">Vui lòng chọn phòng truy cập:</h5>';
+        
+        danhSachPhong.forEach(phong => {
+            htmlOptions += `
+                <button type="button" class="btn btn-outline-success w-100 mb-3 text-start p-3 rounded-3 shadow-sm" 
+                    onclick="chonPhongThue(${phong.khachId}, '${phong.tenKhach}')">
+                    <i class="bi bi-house-door-fill me-2 fs-5"></i> 
+                    <strong class="fs-5">Phòng: ${phong.soPhong}</strong><br>
+                    <small class="text-muted ms-4"><i class="bi bi-geo-alt"></i> ${phong.chiNhanh}</small>
+                </button>
+            `;
+        });
+        
+        htmlOptions += `<button type="button" class="btn btn-secondary w-100 mt-2" onclick="location.reload()"><i class="bi bi-arrow-left"></i> Quay lại</button>`;
+        
+        // Thay thế Form đăng nhập bằng danh sách phòng
+        loginPane.innerHTML = htmlOptions;
+    }
+
+    // Hành động khi khách click vào 1 phòng cụ thể
+    function chonPhongThue(khachId, tenKhach) {
+        localStorage.setItem('userRole', 'USER');
+        localStorage.setItem('khachId', khachId);
+        localStorage.setItem('tenKhach', tenKhach);
+        window.location.href = 'user-dashboard.html';
+    }
 </script>
 </body>
 </html>

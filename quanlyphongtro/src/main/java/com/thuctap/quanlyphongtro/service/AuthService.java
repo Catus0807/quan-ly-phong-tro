@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.List;
 @Service
 public class AuthService {
 
@@ -57,19 +57,49 @@ public class AuthService {
             return response;
         }
 
-        // Kiểm tra xem có phải Khách thuê đăng nhập không
-        NguoiThue khach = nguoiThueRepository.findBySdtAndMatKhau(username, password).orElse(null);
-        if (khach != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("role", "USER");
-            response.put("khachId", khach.getId());
-            response.put("tenKhach", khach.getTenKhach());
-            
-            Long chuTroIdCuaKhach = (khach.getChuTro() != null) ? khach.getChuTro().getId() : null;
-            response.put("chuTroId", chuTroIdCuaKhach);
-            
-            response.put("redirect", "user-dashboard.html");
-            return response;
+        // KIỂM TRA KHÁCH THUÊ ĐĂNG NHẬP (HỖ TRỢ 1 SĐT NHIỀU PHÒNG)
+        List<NguoiThue> danhSachKhach = nguoiThueRepository.findBySdtAndMatKhau(username, password);
+        
+        if (danhSachKhach != null && !danhSachKhach.isEmpty()) {
+            // Lọc bỏ những phòng đã thanh lý để khách không đăng nhập nhầm vào phòng cũ
+            List<NguoiThue> danhSachActive = danhSachKhach.stream()
+                    .filter(k -> !"DA_THANH_LY".equals(k.getTrangThaiGiaHan()))
+                    .toList();
+
+            if (danhSachActive.isEmpty()) {
+                throw new RuntimeException("Các phòng của bạn đều đã được thanh lý / kết thúc hợp đồng!");
+            }
+
+            // Trạng thái 1: Khách chỉ có 1 phòng -> Cho vào thẳng
+            if (danhSachActive.size() == 1) {
+                NguoiThue khach = danhSachActive.get(0);
+                Map<String, Object> response = new HashMap<>();
+                response.put("role", "USER");
+                response.put("khachId", khach.getId());
+                response.put("tenKhach", khach.getTenKhach());
+                response.put("chuTroId", (khach.getChuTro() != null) ? khach.getChuTro().getId() : null);
+                response.put("redirect", "user-dashboard.html");
+                return response;
+            } 
+            // Trạng thái 2: Khách có nhiều phòng -> Báo về Frontend để hiện bảng chọn
+            else {
+                Map<String, Object> response = new HashMap<>();
+                response.put("role", "MULTIPLE_USERS");
+                
+                // Trích xuất danh sách phòng gửi về giao diện
+                List<Map<String, Object>> dsPhong = danhSachActive.stream().map(k -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("khachId", k.getId());
+                    map.put("tenKhach", k.getTenKhach());
+                    map.put("soPhong", k.getPhongTro() != null ? k.getPhongTro().getSoPhong() : "Chưa rõ");
+                    map.put("chiNhanh", (k.getPhongTro() != null && k.getPhongTro().getDiaChi() != null) 
+                                        ? k.getPhongTro().getDiaChi() : "Chưa rõ địa chỉ");
+                    return map;
+                }).toList();
+                
+                response.put("danhSachPhong", dsPhong);
+                return response;
+            }
         }
         
         throw new RuntimeException("Tên đăng nhập hoặc mật khẩu không chính xác!");

@@ -24,7 +24,7 @@ public interface NguoiThueRepository extends JpaRepository<NguoiThue, Long> {
     @Query("SELECT n FROM NguoiThue n WHERE n.chuTro.id = :chuTroId AND n.phongTro.khuVuc.id = :khuVucId")
     List<NguoiThue> findByChuTroIdAndKhuVucId(@Param("chuTroId") Long chuTroId, @Param("khuVucId") Long khuVucId);
     
-    Optional<NguoiThue> findBySdtAndMatKhau(String sdt, String matKhau);
+    List<NguoiThue> findBySdtAndMatKhau(String sdt, String matKhau);
 
     List<NguoiThue> findByNgayKetThucBetween(LocalDate tuNgay, LocalDate denNgay);
 
