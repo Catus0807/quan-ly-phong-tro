@@ -96,7 +96,7 @@ function renderTablePhong(data) {
         const tr = document.createElement('tr');
         const safeRoomJson = JSON.stringify(room).replace(/'/g, "&#39;");
         
-        // Lấy thẳng tên khu vực từ Obj KhuVuc (Chuẩn xác 100%)
+        // Lấy thẳng tên khu vực từ Obj KhuVuc
         const tenKhuVucHienThi = room.khuVuc ? room.khuVuc.tenKhuVuc : '---';
         
         tr.innerHTML = `
@@ -145,7 +145,7 @@ function openModal() {
         gtInput.classList.remove('is-invalid');
     }
     
-    // ĐẦU VÀO ĐỘNG CHI NHÁNH TỪ BỘ LỌC TỔNG (An toàn)
+    // ĐẦU VÀO ĐỘNG CHI NHÁNH TỪ BỘ LỌC TỔNG 
     const modalKhuVucSelect = document.getElementById('roomKhuVuc');
     const globalKhuVuc = document.getElementById('globalKhuVucFilter');
     if (modalKhuVucSelect && globalKhuVuc) {
@@ -338,7 +338,7 @@ function checkTrungTenPhong() {
         });
 }
 
-//  Đóng hàm deleteRoom đúng vị trí
+// Hàm xóa phòng
 function deleteRoom(id) {
     if (confirm('Bạn có chắc chắn muốn xóa phòng này?')) {
         fetch(`${API_URL_PHONG}/${id}`, { method: 'DELETE' })
@@ -353,9 +353,8 @@ function deleteRoom(id) {
             })
             .catch(err => console.error("Lỗi khi xóa:", err));
     }
-} // Kết thúc hàm deleteRoom tại đây
+} 
 
-// Mở Modal giao diện đẹp thay vì dùng prompt của trình duyệt
 function themKhuVucMoi() {
     const input = document.getElementById('inputTenKhuVucMoi');
     if(input) {
@@ -421,4 +420,74 @@ function xacNhanThemKhuVuc() {
         if(modal) modal.hide();
     })
     .catch(err => alert("Không thể thêm chi nhánh: " + err.message));
+}
+
+// Mở Modal Sửa Chi Nhánh (Lấy ID từ bộ lọc tổng)
+function moModalSuaKhuVuc() {
+    const selectEl = document.getElementById('globalKhuVucFilter');
+    const khuVucId = selectEl.value;
+    
+    // Bắt lỗi nếu chủ trọ đang chọn "-- Tất cả khu vực --"
+    if (!khuVucId || khuVucId === "") {
+        alert("⚠️ Vui lòng chọn một Chi nhánh cụ thể trong danh sách để sửa đổi!");
+        return;
+    }
+
+    // Lấy tên khu vực hiện tại đang hiển thị để nạp vào ô input
+    const tenKhuVucHienTai = selectEl.options[selectEl.selectedIndex].text;
+    
+    document.getElementById('editKhuVucId').value = khuVucId;
+    const inputEl = document.getElementById('inputTenKhuVucSua');
+    inputEl.value = tenKhuVucHienTai;
+    inputEl.classList.remove('is-invalid');
+
+    // Hiển thị Modal
+    const modalEl = document.getElementById('modalSuaKhuVuc');
+    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+// Xác nhận lưu thông tin sửa xuống Backend
+function xacNhanSuaKhuVuc() {
+    const id = document.getElementById('editKhuVucId').value;
+    const inputEl = document.getElementById('inputTenKhuVucSua');
+    const tenMoi = inputEl.value.trim();
+
+    if (!tenMoi) {
+        inputEl.classList.add('is-invalid');
+        return;
+    }
+    inputEl.classList.remove('is-invalid');
+
+    const data = {
+        tenKhuVuc: tenMoi,
+        diaChi: tenMoi // Đồng bộ địa chỉ giống như lúc Thêm
+    };
+
+    fetch(`/api/khu-vuc/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(async res => {
+        if (res.ok) {
+            alert("✅ Đổi tên Chi nhánh thành công!");
+            
+            // Ẩn modal sửa
+            const modalEl = document.getElementById('modalSuaKhuVuc');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if(modal) modal.hide();
+
+            // Gọi lại hàm load danh sách khu vực (từ main.js) để cập nhật giao diện
+            if (typeof fetchDanhSachKhuVuc === 'function') {
+                await fetchDanhSachKhuVuc(); // Đợi load xong menu
+                // Giữ nguyên lựa chọn hiện tại để người dùng không bị văng ra ngoài
+                document.getElementById('globalKhuVucFilter').value = id; 
+                reloadCurrentTab(); // Load lại data các phòng theo tên mới
+            }
+        } else {
+            alert("Lỗi: " + await res.text());
+        }
+    })
+    .catch(err => alert("Không thể cập nhật chi nhánh: " + err.message));
 }

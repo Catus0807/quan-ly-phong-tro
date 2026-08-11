@@ -32,7 +32,7 @@ public class KhuVucController {
         return ResponseEntity.ok(khuVucRepository.findByChuTroId(chuTroId));
     }
 
-    //  Viết lại bằng if-else để tránh lỗi ép kiểu (Type mismatch)
+    // API Thêm mới một khu vực CỦA 1 CHỦ TRỌ
     @PostMapping("/chu-tro/{chuTroId}")
     public ResponseEntity<?> createKhuVuc(@PathVariable Long chuTroId, @RequestBody KhuVuc khuVuc) {
         Optional<ChuTro> chuTroOpt = chuTroRepository.findById(chuTroId);
@@ -44,5 +44,19 @@ public class KhuVucController {
         } else {
             return ResponseEntity.badRequest().body("Lỗi: Không tìm thấy tài khoản chủ trọ!");
         }
+    }
+
+    // API Cập nhật (Sửa) thông tin Chi nhánh
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateKhuVuc(@PathVariable Long id, @RequestBody KhuVuc thongTinMoi) {
+        Optional<KhuVuc> opt = khuVucRepository.findById(id);
+        if (opt.isPresent()) {
+            KhuVuc kv = opt.get();
+            kv.setTenKhuVuc(thongTinMoi.getTenKhuVuc());
+            kv.setDiaChi(thongTinMoi.getDiaChi());
+            kv.setMoTa(thongTinMoi.getMoTa());
+            return ResponseEntity.ok(khuVucRepository.save(kv));
+        }
+        return ResponseEntity.badRequest().body("Lỗi: Không tìm thấy chi nhánh cần sửa!");
     }
 }
