@@ -414,3 +414,90 @@ function deleteHoaDon(id) {
             });
     }
 }
+
+
+// TÍNH NĂNG XEM, IN VÀ XUẤT PDF HÓA ĐƠN
+
+// Đổ dữ liệu vào Mẫu Hóa đơn và hiển thị Modal
+function xemChiTietHoaDon(hd) {
+    // Thông tin Header
+    const chiNhanh = hd.phongTro && hd.phongTro.khuVuc ? hd.phongTro.khuVuc.tenKhuVuc : "Hệ thống Trọ Xanh";
+    const diaChi = hd.phongTro && hd.phongTro.khuVuc ? hd.phongTro.khuVuc.diaChi : "Hà Nội";
+    document.getElementById('billChiNhanh').innerText = "Chi nhánh: " + chiNhanh;
+    document.getElementById('billDiaChi').innerText = "Địa chỉ: " + diaChi;
+    document.getElementById('billThangThu').innerText = "Tháng thu: " + hd.thangThu;
+    document.getElementById('billMaHD').innerText = "Mã phiếu: HD_" + String(hd.id).padStart(5, '0');
+    
+    // Ngày lập
+    const date = hd.ngayLap ? new Date(hd.ngayLap) : new Date();
+    document.getElementById('billNgayLap').innerText = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    
+    // Thông tin phòng & khách
+    document.getElementById('billSoPhong').innerText = hd.phongTro ? hd.phongTro.soPhong : "---";
+    document.getElementById('billTenKhach').innerText = "Đại diện Phòng " + (hd.phongTro ? hd.phongTro.soPhong : "---");
+
+    // Dữ liệu Tiền phòng
+    document.getElementById('billTienPhong').innerText = (hd.tienPhong || 0).toLocaleString('vi-VN') + " đ";
+    
+    // Dữ liệu Tiền điện
+    const tieuThuDien = Math.max(0, (hd.soDienMoi || 0) - (hd.soDienCu || 0));
+    const giaDien = hd.giaDien || 0;
+    document.getElementById('billDienCu').innerText = hd.soDienCu || 0;
+    document.getElementById('billDienMoi').innerText = hd.soDienMoi || 0;
+    document.getElementById('billDienTieuThu').innerText = tieuThuDien;
+    document.getElementById('billGiaDien').innerText = giaDien.toLocaleString('vi-VN');
+    document.getElementById('billThanhTienDien').innerText = (tieuThuDien * giaDien).toLocaleString('vi-VN') + " đ";
+    
+    // Dữ liệu Tiền nước
+    const tieuThuNuoc = Math.max(0, (hd.soNuocMoi || 0) - (hd.soNuocCu || 0));
+    const giaNuoc = hd.giaNuoc || 0;
+    document.getElementById('billNuocCu').innerText = hd.soNuocCu || 0;
+    document.getElementById('billNuocMoi').innerText = hd.soNuocMoi || 0;
+    document.getElementById('billNuocTieuThu').innerText = tieuThuNuoc;
+    document.getElementById('billGiaNuoc').innerText = giaNuoc.toLocaleString('vi-VN');
+    document.getElementById('billThanhTienNuoc').innerText = (tieuThuNuoc * giaNuoc).toLocaleString('vi-VN') + " đ";
+    
+    // Phụ phí & Tổng tiền
+    document.getElementById('billPhuPhi').innerText = (hd.phuPhi || 0).toLocaleString('vi-VN') + " đ";
+    document.getElementById('billTongTien').innerText = (hd.tongTien || 0).toLocaleString('vi-VN') + " đ";
+
+    // Hiển thị Modal
+    const modal = new bootstrap.Modal(document.getElementById('modalChiTietHoaDon'));
+    modal.show();
+}
+
+// Xuất bản PDF bằng thư viện html2pdf.js
+function xuatHoaDonPDF() {
+    const element = document.getElementById('hoaDonPrintContent');
+    const maHD = document.getElementById('billMaHD').innerText.split(': ')[1];
+    
+    const opt = {
+        margin:       0.3,
+        filename:     `Hoa_Don_${maHD}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    
+    // Gọi hàm tạo PDF
+    html2pdf().set(opt).from(element).save();
+}
+
+// Mở cửa sổ máy in ảo (In Hóa đơn giấy)
+function inHoaDonGiay() {
+    const printContent = document.getElementById('hoaDonPrintContent').innerHTML;
+    const originalContent = document.body.innerHTML;
+    
+    // Tạm thời thay thế toàn bộ trang web bằng nội dung tờ hóa đơn để in cho chuẩn
+    document.body.innerHTML = `
+        <div style="width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; font-family: 'Times New Roman', serif; color: #000;">
+            ${printContent}
+        </div>
+    `;
+    
+    window.print(); // Gọi lệnh in của trình duyệt
+    
+    // Sau khi in xong, khôi phục lại trang web và reload để các sự kiện JS hoạt động lại
+    document.body.innerHTML = originalContent;
+    window.location.reload();
+}

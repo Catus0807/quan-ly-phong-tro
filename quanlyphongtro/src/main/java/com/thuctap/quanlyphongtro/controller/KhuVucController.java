@@ -59,4 +59,18 @@ public class KhuVucController {
         }
         return ResponseEntity.badRequest().body("Lỗi: Không tìm thấy chi nhánh cần sửa!");
     }
+
+    // API Xóa Chi nhánh
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteKhuVuc(@PathVariable Long id) {
+        try {
+            khuVucRepository.deleteById(id);
+            return ResponseEntity.ok("Xóa chi nhánh thành công!");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Chặn xóa nếu chi nhánh đang chứa phòng trọ
+            return ResponseEntity.badRequest().body("Hệ thống từ chối: Không thể xóa chi nhánh này vì bên trong đang có phòng trọ. Vui lòng xóa hoặc chuyển các phòng trọ đi nơi khác trước!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Lỗi hệ thống: " + e.getMessage());
+        }
+    }
 }

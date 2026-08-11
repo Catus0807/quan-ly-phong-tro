@@ -45,6 +45,7 @@ let danhSachPhongGoc = [];
 function fetchRooms() {
     const chuTroId = localStorage.getItem('chuTroId');
     if (!chuTroId) return;
+    
     const selectedDiaChi = document.getElementById('globalKhuVucFilter')?.value;
     const url = (selectedDiaChi && selectedDiaChi !== "")
     ? `${API_URL_PHONG}/chu-tro/${chuTroId}/search?khuVucId=${selectedDiaChi}`
@@ -62,6 +63,7 @@ function fetchRooms() {
 function searchRooms() {
     const keyword = document.getElementById('searchInput')?.value.trim().toLowerCase() || '';
     const status = document.getElementById('filterTrangThaiPhong')?.value || '';
+    
     const filteredData = danhSachPhongGoc.filter(room => {
         if (status && room.trangThai !== status) return false;
         if (keyword) {
@@ -164,7 +166,6 @@ function openModal() {
     if (titleEl) titleEl.innerText = 'Thêm Phòng Mới';
     
     const modal = getRoomModal();
-
     // Ép mặc định là TRỐNG và khóa tùy chọn DANG_THUE
     const trangThaiSelect = document.getElementById('trangThai');
     if (trangThaiSelect) {
@@ -173,7 +174,6 @@ function openModal() {
             opt.disabled = (opt.value === 'DANG_THUE');
         });
     }
-
     if(modal) modal.show();
 }
 
@@ -262,18 +262,16 @@ function saveRoom() {
     const modalKhuVucSelect = document.getElementById('roomKhuVuc');
     const idKhuVuc = modalKhuVucSelect ? parseInt(modalKhuVucSelect.value) : null;
     const tenDiaChi = modalKhuVucSelect && modalKhuVucSelect.selectedIndex > 0 ? modalKhuVucSelect.options[modalKhuVucSelect.selectedIndex].text : '';
-
     if (!idKhuVuc) {
         alert("Vui lòng chọn Chi nhánh!");
         return;
     }
-
     const roomData = {
         soPhong: soPhongInput?.value.trim(),
         dienTich: document.getElementById('dienTich')?.value,
         giaThue: giaThueToSave,
         diaChi: tenDiaChi, 
-        khuVuc: { id: idKhuVuc }, // Trực tiếp truyền Object ID vào
+        khuVuc: { id: idKhuVuc }, 
         trangThai: document.getElementById('trangThai')?.value
     };
     
@@ -306,7 +304,6 @@ function saveRoom() {
 function checkTrungTenPhong() {
     const chuTroId = localStorage.getItem('chuTroId');
     if (!chuTroId) return;
-
     const soPhongInput = document.getElementById('soPhong');
     const soPhongValue = soPhongInput ? soPhongInput.value.trim().toLowerCase() : '';
     const modalKhuVucSelect = document.getElementById('roomKhuVuc');
@@ -322,7 +319,6 @@ function checkTrungTenPhong() {
     fetch(`${API_URL_PHONG}/chu-tro/${chuTroId}`)
         .then(res => res.json())
         .then(allRooms => {
-            // Kiểm tra dựa trên ID khu vực thay vì text
             const isDuplicate = allRooms.some(r => 
                 r.soPhong.toLowerCase() === soPhongValue && 
                 r.khuVuc && String(r.khuVuc.id) === String(idKhuVuc) &&
@@ -355,10 +351,12 @@ function deleteRoom(id) {
     }
 } 
 
+// TÍNH NĂNG THÊM CHI NHÁNH NHANH TRONG KHI THÊM PHÒNG
+
 function themKhuVucMoi() {
     const input = document.getElementById('inputTenKhuVucMoi');
     if(input) {
-        input.value = ''; // Làm sạch ô nhập cũ
+        input.value = ''; 
         input.classList.remove('is-invalid');
     }
     
@@ -369,7 +367,6 @@ function themKhuVucMoi() {
     }
 }
 
-// Xử lý lưu chi nhánh mới vào Database
 function xacNhanThemKhuVuc() {
     const chuTroId = localStorage.getItem('chuTroId');
     if (!chuTroId) return alert("Vui lòng đăng nhập lại!");
@@ -400,12 +397,10 @@ function xacNhanThemKhuVuc() {
     .then(newKhuVuc => {
         alert("Đã thêm chi nhánh mới thành công!");
         
-        // Cập nhật lại bộ lọc tổng ở ngoài màn hình
         if (typeof fetchDanhSachKhuVuc === 'function') {
             fetchDanhSachKhuVuc(); 
         }
         
-        // Cập nhật thẻ Select trong form Thêm Phòng
         const modalKhuVucSelect = document.getElementById('roomKhuVuc');
         if (modalKhuVucSelect) {
             modalKhuVucSelect.innerHTML += `<option value="${newKhuVuc.id}">${newKhuVuc.tenKhuVuc}</option>`;
@@ -414,7 +409,6 @@ function xacNhanThemKhuVuc() {
             modalKhuVucSelect.classList.add('is-valid');
         }
         
-        // Ẩn modal nhập tên chi nhánh đi
         const modalEl = document.getElementById('modalThemKhuVuc');
         const modal = bootstrap.Modal.getInstance(modalEl);
         if(modal) modal.hide();
@@ -422,47 +416,75 @@ function xacNhanThemKhuVuc() {
     .catch(err => alert("Không thể thêm chi nhánh: " + err.message));
 }
 
-// Mở Modal Sửa Chi Nhánh (Lấy ID từ bộ lọc tổng)
-function moModalSuaKhuVuc() {
-    const selectEl = document.getElementById('globalKhuVucFilter');
-    const khuVucId = selectEl.value;
-    
-    // Bắt lỗi nếu chủ trọ đang chọn "-- Tất cả khu vực --"
-    if (!khuVucId || khuVucId === "") {
-        alert("⚠️ Vui lòng chọn một Chi nhánh cụ thể trong danh sách để sửa đổi!");
-        return;
-    }
 
-    // Lấy tên khu vực hiện tại đang hiển thị để nạp vào ô input
-    const tenKhuVucHienTai = selectEl.options[selectEl.selectedIndex].text;
-    
-    document.getElementById('editKhuVucId').value = khuVucId;
-    const inputEl = document.getElementById('inputTenKhuVucSua');
-    inputEl.value = tenKhuVucHienTai;
-    inputEl.classList.remove('is-invalid');
+// TÍNH NĂNG QUẢN LÝ CHI NHÁNH 
+function moModalQuanLyKhuVuc() {
+    const chuTroId = localStorage.getItem('chuTroId');
+    if (!chuTroId) return;
 
-    // Hiển thị Modal
-    const modalEl = document.getElementById('modalSuaKhuVuc');
-    const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-    modal.show();
+    fetch(`/api/khu-vuc/chu-tro/${chuTroId}`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('bangQuanLyChiNhanh');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" class="text-muted">Bạn chưa có chi nhánh nào.</td></tr>';
+            } else {
+                data.forEach(kv => {
+                    const tenSafe = kv.tenKhuVuc.replace(/'/g, "\\'");
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="text-start ps-3 fw-bold text-primary">${kv.tenKhuVuc}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning text-dark me-1" onclick="suaChiNhanhNhanh(${kv.id}, '${tenSafe}')" title="Sửa tên"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="xoaChiNhanhNhanh(${kv.id})" title="Xóa chi nhánh"><i class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            const modalEl = document.getElementById('modalQuanLyKhuVuc');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.show();
+        })
+        .catch(err => console.error("Lỗi tải chi nhánh:", err));
 }
 
-// Xác nhận lưu thông tin sửa xuống Backend
-function xacNhanSuaKhuVuc() {
-    const id = document.getElementById('editKhuVucId').value;
-    const inputEl = document.getElementById('inputTenKhuVucSua');
-    const tenMoi = inputEl.value.trim();
-
+function themChiNhanhNhanh() {
+    const input = document.getElementById('inputThemChiNhanhNhanh');
+    const tenMoi = input.value.trim();
     if (!tenMoi) {
-        inputEl.classList.add('is-invalid');
+        input.classList.add('is-invalid');
         return;
     }
-    inputEl.classList.remove('is-invalid');
+    input.classList.remove('is-invalid');
 
-    const data = {
-        tenKhuVuc: tenMoi,
-        diaChi: tenMoi // Đồng bộ địa chỉ giống như lúc Thêm
-    };
+    const chuTroId = localStorage.getItem('chuTroId');
+    const data = { tenKhuVuc: tenMoi, diaChi: tenMoi };
+
+    fetch(`/api/khu-vuc/chu-tro/${chuTroId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (res.ok) {
+            input.value = ''; 
+            moModalQuanLyKhuVuc(); 
+            if (typeof fetchDanhSachKhuVuc === 'function') fetchDanhSachKhuVuc(); 
+        } else {
+            res.text().then(msg => alert("Lỗi: " + msg));
+        }
+    });
+}
+
+function suaChiNhanhNhanh(id, tenCu) {
+    const tenMoi = prompt("Nhập tên mới cho chi nhánh:", tenCu);
+    if (tenMoi === null || tenMoi.trim() === "" || tenMoi.trim() === tenCu) return;
+
+    const data = { tenKhuVuc: tenMoi.trim(), diaChi: tenMoi.trim() };
 
     fetch(`/api/khu-vuc/${id}`, {
         method: 'PUT',
@@ -471,23 +493,25 @@ function xacNhanSuaKhuVuc() {
     })
     .then(async res => {
         if (res.ok) {
-            alert("✅ Đổi tên Chi nhánh thành công!");
-            
-            // Ẩn modal sửa
-            const modalEl = document.getElementById('modalSuaKhuVuc');
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            if(modal) modal.hide();
-
-            // Gọi lại hàm load danh sách khu vực (từ main.js) để cập nhật giao diện
-            if (typeof fetchDanhSachKhuVuc === 'function') {
-                await fetchDanhSachKhuVuc(); // Đợi load xong menu
-                // Giữ nguyên lựa chọn hiện tại để người dùng không bị văng ra ngoài
-                document.getElementById('globalKhuVucFilter').value = id; 
-                reloadCurrentTab(); // Load lại data các phòng theo tên mới
-            }
+            moModalQuanLyKhuVuc(); 
+            if (typeof fetchDanhSachKhuVuc === 'function') fetchDanhSachKhuVuc();
+            reloadCurrentTab(); 
         } else {
             alert("Lỗi: " + await res.text());
         }
-    })
-    .catch(err => alert("Không thể cập nhật chi nhánh: " + err.message));
+    });
+}
+
+function xoaChiNhanhNhanh(id) {
+    if (!confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa chi nhánh này không?\n\nLưu ý: Chỉ có thể xóa chi nhánh khi bên trong không còn phòng trọ nào!")) return;
+
+    fetch(`/api/khu-vuc/${id}`, { method: 'DELETE' })
+    .then(async res => {
+        if (res.ok) {
+            moModalQuanLyKhuVuc(); 
+            if (typeof fetchDanhSachKhuVuc === 'function') fetchDanhSachKhuVuc();
+        } else {
+            alert(await res.text()); 
+        }
+    });
 }
