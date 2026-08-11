@@ -116,6 +116,9 @@ function renderTableHoaDon(data) {
             <td class="fw-bold text-danger fs-6 align-middle">${(hd.tongTien || 0).toLocaleString('vi-VN')} đ</td>
             <td class="align-middle">${badgeTrangThai}</td>
             <td class="align-middle">
+                <button class="btn btn-sm btn-primary mb-1" onclick='xemChiTietHoaDon(${safeHdJson})' title="Xem & In Hóa Đơn">
+                    <i class="bi bi-eye"></i> Xem
+                </button>
                 <button class="btn btn-sm btn-warning mb-1" onclick='openHoaDonModal(${safeHdJson})' title="Sửa">
                     <i class="bi bi-pencil"></i>
                 </button>
@@ -415,18 +418,13 @@ function deleteHoaDon(id) {
     }
 }
 
+// TÍNH NĂNG XEM CHI TIẾT, IN VÀ XUẤT PDF HÓA ĐƠN
 
-// TÍNH NĂNG XEM, IN VÀ XUẤT PDF HÓA ĐƠN
-
-// Đổ dữ liệu vào Mẫu Hóa đơn và hiển thị Modal
+// 1. Đổ dữ liệu vào Mẫu Hóa đơn và hiển thị Modal
 function xemChiTietHoaDon(hd) {
-    // Thông tin Header
-    const chiNhanh = hd.phongTro && hd.phongTro.khuVuc ? hd.phongTro.khuVuc.tenKhuVuc : "Hệ thống Trọ Xanh";
-    const diaChi = hd.phongTro && hd.phongTro.khuVuc ? hd.phongTro.khuVuc.diaChi : "Hà Nội";
-    document.getElementById('billChiNhanh').innerText = "Chi nhánh: " + chiNhanh;
-    document.getElementById('billDiaChi').innerText = "Địa chỉ: " + diaChi;
-    document.getElementById('billThangThu').innerText = "Tháng thu: " + hd.thangThu;
-    document.getElementById('billMaHD').innerText = "Mã phiếu: HD_" + String(hd.id).padStart(5, '0');
+    document.getElementById('billChiNhanh').innerText = hd.phongTro && hd.phongTro.khuVuc ? hd.phongTro.khuVuc.tenKhuVuc : "---";
+    document.getElementById('billThangThu').innerText = "Tháng " + hd.thangThu;
+    document.getElementById('billMaHD').innerText = "HD" + String(hd.id).padStart(5, '0');
     
     // Ngày lập
     const date = hd.ngayLap ? new Date(hd.ngayLap) : new Date();
@@ -436,29 +434,26 @@ function xemChiTietHoaDon(hd) {
     document.getElementById('billSoPhong').innerText = hd.phongTro ? hd.phongTro.soPhong : "---";
     document.getElementById('billTenKhach').innerText = "Đại diện Phòng " + (hd.phongTro ? hd.phongTro.soPhong : "---");
 
-    // Dữ liệu Tiền phòng
-    document.getElementById('billTienPhong').innerText = (hd.tienPhong || 0).toLocaleString('vi-VN') + " đ";
+    // Dữ liệu Tiền
+    document.getElementById('billTienPhong').innerText = (hd.tienPhong || 0).toLocaleString('vi-VN');
     
-    // Dữ liệu Tiền điện
     const tieuThuDien = Math.max(0, (hd.soDienMoi || 0) - (hd.soDienCu || 0));
     const giaDien = hd.giaDien || 0;
     document.getElementById('billDienCu').innerText = hd.soDienCu || 0;
     document.getElementById('billDienMoi').innerText = hd.soDienMoi || 0;
     document.getElementById('billDienTieuThu').innerText = tieuThuDien;
     document.getElementById('billGiaDien').innerText = giaDien.toLocaleString('vi-VN');
-    document.getElementById('billThanhTienDien').innerText = (tieuThuDien * giaDien).toLocaleString('vi-VN') + " đ";
+    document.getElementById('billThanhTienDien').innerText = (tieuThuDien * giaDien).toLocaleString('vi-VN');
     
-    // Dữ liệu Tiền nước
     const tieuThuNuoc = Math.max(0, (hd.soNuocMoi || 0) - (hd.soNuocCu || 0));
     const giaNuoc = hd.giaNuoc || 0;
     document.getElementById('billNuocCu').innerText = hd.soNuocCu || 0;
     document.getElementById('billNuocMoi').innerText = hd.soNuocMoi || 0;
     document.getElementById('billNuocTieuThu').innerText = tieuThuNuoc;
     document.getElementById('billGiaNuoc').innerText = giaNuoc.toLocaleString('vi-VN');
-    document.getElementById('billThanhTienNuoc').innerText = (tieuThuNuoc * giaNuoc).toLocaleString('vi-VN') + " đ";
+    document.getElementById('billThanhTienNuoc').innerText = (tieuThuNuoc * giaNuoc).toLocaleString('vi-VN');
     
-    // Phụ phí & Tổng tiền
-    document.getElementById('billPhuPhi').innerText = (hd.phuPhi || 0).toLocaleString('vi-VN') + " đ";
+    document.getElementById('billPhuPhi').innerText = (hd.phuPhi || 0).toLocaleString('vi-VN');
     document.getElementById('billTongTien').innerText = (hd.tongTien || 0).toLocaleString('vi-VN') + " đ";
 
     // Hiển thị Modal
@@ -466,10 +461,10 @@ function xemChiTietHoaDon(hd) {
     modal.show();
 }
 
-// Xuất bản PDF bằng thư viện html2pdf.js
+// 2. Xuất bản PDF bằng html2pdf.js
 function xuatHoaDonPDF() {
     const element = document.getElementById('hoaDonPrintContent');
-    const maHD = document.getElementById('billMaHD').innerText.split(': ')[1];
+    const maHD = document.getElementById('billMaHD').innerText;
     
     const opt = {
         margin:       0.3,
@@ -479,25 +474,22 @@ function xuatHoaDonPDF() {
         jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
     
-    // Gọi hàm tạo PDF
     html2pdf().set(opt).from(element).save();
 }
 
-// Mở cửa sổ máy in ảo (In Hóa đơn giấy)
+// 3. Mở máy in để In giấy
 function inHoaDonGiay() {
     const printContent = document.getElementById('hoaDonPrintContent').innerHTML;
     const originalContent = document.body.innerHTML;
     
-    // Tạm thời thay thế toàn bộ trang web bằng nội dung tờ hóa đơn để in cho chuẩn
     document.body.innerHTML = `
         <div style="width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; font-family: 'Times New Roman', serif; color: #000;">
             ${printContent}
         </div>
     `;
     
-    window.print(); // Gọi lệnh in của trình duyệt
+    window.print();
     
-    // Sau khi in xong, khôi phục lại trang web và reload để các sự kiện JS hoạt động lại
     document.body.innerHTML = originalContent;
     window.location.reload();
 }

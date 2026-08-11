@@ -1065,49 +1065,42 @@
     </div>
 </div>
 
-<!-- MODAL CHI TIẾT HÓA ĐƠN (XEM, IN, XUẤT PDF) -->
+<!-- MODAL XEM CHI TIẾT VÀ IN HÓA ĐƠN -->
 <div class="modal fade" id="modalChiTietHoaDon" tabindex="-1" style="z-index: 1060;">
     <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title fw-bold"><i class="bi bi-receipt"></i> Chi Tiết Hóa Đơn</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <!-- VÙNG NỘI DUNG SẼ ĐƯỢC XUẤT RA PDF HOẶC IN -->
+            
+            <!-- Phần nội dung tờ Hóa đơn (Nền xám, giấy trắng ở giữa) -->
             <div class="modal-body bg-secondary bg-opacity-10 d-flex justify-content-center p-4">
                 <div id="hoaDonPrintContent" class="bg-white shadow border p-5" style="width: 100%; max-width: 800px; font-family: 'Times New Roman', serif; color: #000;">
                     
-                    <!-- Header Hóa Đơn -->
-                    <div class="d-flex justify-content-between border-bottom border-2 pb-3 mb-4">
-                        <div>
-                            <h3 class="fw-bold mb-1" style="color: #198754;">HỆ THỐNG TRỌ XANH</h3>
-                            <div id="billChiNhanh" class="fw-bold fs-5 mt-2">Chi nhánh: ...</div>
-                            <div id="billDiaChi" class="fst-italic" style="font-size: 0.95rem;">Địa chỉ: ...</div>
-                        </div>
-                        <div class="text-end">
-                            <h2 class="fw-bold text-danger mb-2">HÓA ĐƠN THANH TOÁN</h2>
-                            <div class="fw-bold fs-5" id="billThangThu">Tháng thu: ...</div>
-                            <div class="fst-italic mt-1" style="font-size: 0.95rem;" id="billMaHD">Mã phiếu: ...</div>
-                        </div>
+                    <!-- Tiêu đề Hóa đơn -->
+                    <div class="text-center mb-4">
+                        <h4 class="fw-bold mb-1" style="text-transform: uppercase;">HÓA ĐƠN THANH TOÁN TIỀN PHÒNG</h4>
+                        <div class="fst-italic" id="billThangThu">Tháng ... năm ...</div>
                     </div>
 
-                    <!-- Thông tin khách hàng -->
-                    <div class="mb-4 fs-5">
-                        <div class="row mb-2">
-                            <div class="col-6"><strong>Khách thuê đại diện:</strong> <span id="billTenKhach">...</span></div>
-                            <div class="col-6 text-end"><strong>Phòng số:</strong> <span id="billSoPhong" class="fw-bold text-primary fs-4">...</span></div>
-                        </div>
+                    <!-- Thông tin chung -->
+                    <div class="mb-4" style="line-height: 1.8; font-size: 1.1rem;">
                         <div class="row">
-                            <div class="col-12"><strong>Ngày xuất hóa đơn:</strong> <span id="billNgayLap">...</span></div>
+                            <div class="col-7">
+                                <div><strong>Khu vực / Chi nhánh:</strong> <span id="billChiNhanh">...</span></div>
+                                <div><strong>Người nộp tiền (Đại diện):</strong> <span id="billTenKhach">...</span></div>
+                            </div>
+                            <div class="col-5">
+                                <div><strong>Mã Hóa Đơn:</strong> <span id="billMaHD">...</span></div>
+                                <div><strong>Phòng số:</strong> <span id="billSoPhong" class="fw-bold fs-5 text-danger">...</span></div>
+                            </div>
                         </div>
+                        <div><strong>Ngày lập phiếu:</strong> <span id="billNgayLap">...</span></div>
                     </div>
 
-                    <!-- Bảng kê chi tiết -->
-                    <table class="table table-bordered border-dark text-center align-middle mb-4">
-                        <thead style="background-color: #f8f9fa;">
+                    <!-- Bảng chi phí -->
+                    <table class="table table-bordered border-dark text-center align-middle mb-4" style="font-size: 1.05rem;">
+                        <thead>
                             <tr>
                                 <th>STT</th>
-                                <th>Nội dung thu</th>
+                                <th>Nội dung</th>
                                 <th>Chỉ số Cũ</th>
                                 <th>Chỉ số Mới</th>
                                 <th>Tiêu thụ</th>
@@ -1115,69 +1108,69 @@
                                 <th>Thành tiền</th>
                             </tr>
                         </thead>
-                        <tbody class="fs-6">
+                        <tbody>
                             <tr>
                                 <td>1</td>
-                                <td class="text-start fw-bold">Tiền phòng</td>
+                                <td class="text-start fw-bold">Tiền thuê phòng</td>
                                 <td>-</td><td>-</td><td>-</td><td>-</td>
-                                <td class="text-end fw-bold" id="billTienPhong">0 đ</td>
+                                <td class="text-end fw-bold" id="billTienPhong">0</td>
                             </tr>
                             <tr>
                                 <td>2</td>
                                 <td class="text-start fw-bold">Tiền điện</td>
                                 <td id="billDienCu">0</td><td id="billDienMoi">0</td>
-                                <td id="billDienTieuThu" class="fw-bold text-primary">0</td>
+                                <td id="billDienTieuThu">0</td>
                                 <td id="billGiaDien">0</td>
-                                <td class="text-end fw-bold" id="billThanhTienDien">0 đ</td>
+                                <td class="text-end fw-bold" id="billThanhTienDien">0</td>
                             </tr>
                             <tr>
                                 <td>3</td>
                                 <td class="text-start fw-bold">Tiền nước</td>
                                 <td id="billNuocCu">0</td><td id="billNuocMoi">0</td>
-                                <td id="billNuocTieuThu" class="fw-bold text-info">0</td>
+                                <td id="billNuocTieuThu">0</td>
                                 <td id="billGiaNuoc">0</td>
-                                <td class="text-end fw-bold" id="billThanhTienNuoc">0 đ</td>
+                                <td class="text-end fw-bold" id="billThanhTienNuoc">0</td>
                             </tr>
                             <tr>
                                 <td>4</td>
-                                <td class="text-start fw-bold">Phụ phí (Wifi, Rác...)</td>
+                                <td class="text-start fw-bold">Phụ phí (Rác, Wifi...)</td>
                                 <td>-</td><td>-</td><td>-</td><td>-</td>
-                                <td class="text-end fw-bold" id="billPhuPhi">0 đ</td>
+                                <td class="text-end fw-bold" id="billPhuPhi">0</td>
                             </tr>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="6" class="text-end fw-bold fs-5">TỔNG CỘNG THANH TOÁN:</td>
-                                <td class="text-end fw-bold fs-4 text-danger" id="billTongTien">0 đ</td>
+                                <td colspan="6" class="text-end fw-bold fs-5">TỔNG CỘNG TIỀN THANH TOÁN:</td>
+                                <td class="text-end fw-bold fs-5 text-danger" id="billTongTien">0</td>
                             </tr>
                         </tfoot>
                     </table>
 
-                    <!-- Footer Chữ ký -->
-                    <div class="row text-center pt-2 mt-4 pb-5">
+                    <!-- Chữ ký -->
+                    <div class="row text-center mt-5 pb-5">
                         <div class="col-6">
-                            <p class="fw-bold mb-5 fs-5">Người nộp tiền</p>
+                            <p class="fw-bold mb-5 fs-6">Người nộp tiền</p>
                             <p class="fst-italic text-muted">(Ký, ghi rõ họ tên)</p>
                         </div>
                         <div class="col-6">
-                            <p class="fw-bold mb-5 fs-5">Chủ nhà trọ</p>
+                            <p class="fw-bold mb-5 fs-6">Người thu tiền</p>
                             <p class="fst-italic text-muted">(Ký, ghi rõ họ tên)</p>
                         </div>
-                    </div>
-                    <div class="text-center mt-5 mb-2 fst-italic text-muted" style="font-size: 0.9rem;">
-                        Vui lòng thanh toán hóa đơn đúng hạn. Cảm ơn quý khách!
                     </div>
                 </div>
             </div>
-
-            <div class="modal-footer justify-content-end bg-light">
-                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-danger fw-bold" onclick="xuatHoaDonPDF()">
-                    <i class="bi bi-file-pdf"></i> Tải bản PDF
-                </button>
-                <button type="button" class="btn btn-primary fw-bold" onclick="inHoaDonGiay()">
-                    <i class="bi bi-printer"></i> In Hóa đơn
-                </button>
+            
+            <!-- 3 Nút bấm (Đóng - Tải PDF - In) -->
+            <div class="modal-footer justify-content-between bg-white">
+                <button type="button" class="btn btn-secondary fw-bold px-4" data-bs-dismiss="modal">Đóng</button>
+                <div>
+                    <button type="button" class="btn btn-danger fw-bold me-2" onclick="xuatHoaDonPDF()">
+                        <i class="bi bi-file-pdf"></i> Tải bản PDF
+                    </button>
+                    <button type="button" class="btn btn-primary fw-bold" onclick="inHoaDonGiay()">
+                        <i class="bi bi-printer"></i> In Hóa đơn
+                    </button>
+                </div>
             </div>
         </div>
     </div>
