@@ -291,4 +291,43 @@ public class NguoiThueService {
     public List<NguoiThue> getLichSuThanhLy(Long chuTroId) {
         return nguoiThueRepository.findByChuTroIdAndTrangThaiGiaHan(chuTroId, "DA_THANH_LY");
     }
+
+    // LOGIC XỬ LÝ GIA HẠN & TẠO PHỤ LỤC HỢP ĐỒNG 
+    @Transactional
+    public void giaHanHopDong(Long id, String ngayKetThucMoiStr, String phuLucHtml) {
+        NguoiThue khach = getKhachTheoId(id);
+        
+        // 1. Cập nhật ngày kết thúc mới cho hợp đồng
+        LocalDate ngayKetThucMoi = LocalDate.parse(ngayKetThucMoiStr);
+        khach.setNgayKetThuc(ngayKetThucMoi);
+        
+        // 2. Chèn đoạn HTML Phụ Lục vào cuối Hợp đồng gốc hiện tại
+        String hopDongGoc = khach.getNoiDungHopDong();
+        if (hopDongGoc == null) {
+            hopDongGoc = ""; // Đảm bảo không bị null pointer
+        }
+        // Gắn nối tiếp bản HTML cũ với bản HTML phụ lục mới
+        khach.setNoiDungHopDong(hopDongGoc + phuLucHtml);
+        
+        // 3. Xóa trạng thái "Chờ gia hạn" / "Đang yêu cầu" để đưa hợp đồng về hoạt động bình thường
+        khach.setTrangThaiGiaHan(null);
+        
+        // 4. Lưu thay đổi xuống CSDL
+        nguoiThueRepository.save(khach);
+        
+        // 5. Tự động bắn thông báo cho khách thuê biết Chủ trọ đã duyệt
+        if (khach.getChuTro() != null) {
+            String noiDungThongBao = "Chủ trọ đã gia hạn hợp đồng của bạn đến ngày " 
+                    + ngayKetThucMoi.toString() 
+                    + ". Vui lòng mở xem Phụ lục gia hạn ở cuối Hợp đồng gốc.";
+            thongBaoService.taoThongBao(
+                    "🎉 Hợp đồng đã được gia hạn", 
+                    noiDungThongBao, 
+                    "KHACH_THUE", 
+                    khach.getId(), 
+                    "HOP_DONG", 
+                    khach.getId()
+            );
+        }
+    }
 }

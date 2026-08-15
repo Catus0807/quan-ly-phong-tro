@@ -129,7 +129,6 @@ public class NguoiThueController {
         }
     }
 
-    //  API Kiểm tra thông minh đa cấp độ (Trả về chi tiết tình trạng để Frontend xử lý auto-fill)
     @GetMapping("/chu-tro/{chuTroId}/kiem-tra-danh-tinh")
     public ResponseEntity<?> kiemTraDanhTinhThongMinh(
             @PathVariable Long chuTroId, 
@@ -139,7 +138,6 @@ public class NguoiThueController {
         return ResponseEntity.ok(nguoiThueService.kiemTraDanhTinhThongMinh(chuTroId, cccd, sdt));
     }
 
-    // API XỬ LÝ KHÁCH BÁO TRẢ PHÒNG CHỦ ĐỘNG
     @PostMapping("/{id}/bao-tra-phong")
     public ResponseEntity<?> baoTraPhong(@PathVariable Long id, @RequestParam String ngayChuyen) {
         try {
@@ -150,7 +148,6 @@ public class NguoiThueController {
         }
     }
     
-    // API Khách thuê HỦY thông báo trả phòng
     @PostMapping("/{id}/huy-bao-tra-phong")
     public ResponseEntity<?> huyBaoTraPhong(@PathVariable Long id) {
         try {
@@ -161,7 +158,6 @@ public class NguoiThueController {
         }
     }
 
-    // API Chủ trọ phản hồi yêu cầu (Chấp nhận/Từ chối kèm lý do)
     @PostMapping("/{id}/phan-hoi-yeu-cau")
     public ResponseEntity<?> phanHoiYeuCau(
             @PathVariable Long id,
@@ -178,5 +174,20 @@ public class NguoiThueController {
     @GetMapping("/chu-tro/{chuTroId}/lich-su-thanh-ly")
     public ResponseEntity<List<NguoiThue>> getLichSuThanhLy(@PathVariable Long chuTroId) {
         return ResponseEntity.ok(nguoiThueService.getLichSuThanhLy(chuTroId));
+    }
+
+    //  XÁC NHẬN GIA HẠN HỢP ĐỒNG 
+    @PutMapping("/{id}/gia-han")
+    public ResponseEntity<?> giaHanHopDong(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        try {
+            String ngayKetThucMoi = payload.get("ngayKetThucMoi");
+            String phuLucHtml = payload.get("phuLucHtml");
+            
+            nguoiThueService.giaHanHopDong(id, ngayKetThucMoi, phuLucHtml);
+            
+            return ResponseEntity.ok("Đã gia hạn và tạo phụ lục thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
